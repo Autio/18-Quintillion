@@ -7,10 +7,20 @@ public class GameController : MonoBehaviour {
 
     public GameObject worldNumberText;
     public GameObject mainText;
-    private float lampCounter = 2.0f / 9;
+    public GameObject[] resourceTexts;
+    public GameObject[] resourceStockpileTexts;
+    int[] resourceGains;
+    int[] resourceStockpiles;
+    private float lampSpeed = 1.6f;
+    private float lampCounter = 0.2f;
+    private int activeLamps = 5;
     public GameObject[] lamps;
     public Sprite[] lampSprites;
     int currentLamp = 0;
+
+    public AudioSource buttonSound;
+    public AudioSource[] clickSounds;
+
     List<string> part1 = new List<string>();
     List<string> part2 = new List<string>();
     List<string> part3 = new List<string>();
@@ -44,6 +54,10 @@ public class GameController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        resourceGains = new int[10];
+        resourceStockpiles = new int[10];
+
         part1.Add("mainly ");
         part1.Add("fabulously ");
         part1.Add("wholly ");
@@ -382,7 +396,7 @@ public class GameController : MonoBehaviour {
         {
             IncrementLamp();
             Debug.Log("Incrementing lamp");
-            lampCounter = 2.0f / 9;
+            lampCounter = lampSpeed / (activeLamps + 1);
 
         }
 
@@ -390,15 +404,41 @@ public class GameController : MonoBehaviour {
         {
             DiscoverNewPlanet();
         }
+
+
+        // debug controls
+
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            decrementActiveLamps();
+        } 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            IncrementActiveLamps();
+        }
 	}
 
     void IncrementLamp()
     {
-        currentLamp += 1;
-        if(currentLamp >= lamps.Length)
+        if(currentLamp == 10)
         {
-            currentLamp = 0;
+            currentLamp = -1;
         }
+        currentLamp += 1;
+        // play sound
+        int soundNumber = Random.Range(0, clickSounds.Length - 1);
+  
+        if (currentLamp >= activeLamps && currentLamp < 10)
+        {
+            currentLamp = 10;
+            soundNumber = clickSounds.Length;
+        }
+        else   
+        {
+            clickSounds[soundNumber].Play();
+        }
+        
+
         lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[1];
 
         for (int i = 0; i < lamps.Length; i++)
@@ -408,10 +448,47 @@ public class GameController : MonoBehaviour {
                 lamps[i].GetComponent<SpriteRenderer>().sprite = lampSprites[0];
             }
         }
+
+
+        // RESOURCES also get incremented here
+
+        for (int i = 0; i < resourceStockpiles.Length; i++)
+        {
+            if (resourceGains[i] != 0)
+            {
+                resourceStockpiles[i] += resourceGains[i];
+                resourceStockpileTexts[i].GetComponent<Text>().text = resourceStockpiles[i].ToString("N0");
+                
+            }
+
+        }
+    }
+
+    void IncrementActiveLamps()
+    {
+        activeLamps += 1;
+        if(activeLamps > lamps.Length - 1)
+        {
+            activeLamps = lamps.Length;
+        }
+        Debug.Log(activeLamps);
+    }
+
+    void decrementActiveLamps()
+    {
+        activeLamps -= 1;
+        if(activeLamps < 1)
+        {
+            activeLamps = 1;
+        }
     }
 
     public void DiscoverNewPlanet()
     {
+
+        // play sound
+        buttonSound.Play();
+
         int firstNumber;
         firstNumber = Random.Range(0, 2);
 
@@ -446,7 +523,12 @@ public class GameController : MonoBehaviour {
             {
                 leadingZeroes = false;
             }
+            if (i == 8)
+            {
+                // Cheekily replace the 9th number with the currently active lamp number
+                quintillions[i] = currentLamp;
 
+            }
             if (!leadingZeroes)
             {
                 outputNumber += quintillions[i].ToString();
@@ -456,6 +538,7 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
+
 
         // Write numbers in number chain
         Debug.Log(outputNumber);
@@ -478,7 +561,7 @@ public class GameController : MonoBehaviour {
             worldText += part6[quintillions[5]];
             worldText += part7[quintillions[6]];
             worldText += part8[quintillions[7]];
-            worldText += part9[quintillions[8]];
+            worldText += part9[quintillions[8]]; // Resources!
             worldText += part10[quintillions[9]];
             worldText += part11[quintillions[10]];
             worldText += part12[quintillions[11]];
@@ -507,7 +590,17 @@ public class GameController : MonoBehaviour {
         {
             worldText = "The probe got lost!";
             worldNumberText.GetComponent<Text>().text = "World: ???";
+            worldText = "The probe got lost!";
+            mainText.GetComponent<Text>().text = worldText;
         }
+        // Increment resource gain from that type of world
+        resourceGains[quintillions[8]] += 1;
+        string resourceText = "+";
+        string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
+        resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
+
+
+
         mainText.GetComponent<Text>().text = worldText;
         ChangeCameraBackgroundColour(quintillions[1]);
     }
