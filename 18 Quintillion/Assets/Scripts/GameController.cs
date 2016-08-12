@@ -9,17 +9,22 @@ public class GameController : MonoBehaviour {
     public GameObject mainText;
     public GameObject[] resourceTexts;
     public GameObject[] resourceStockpileTexts;
+    public GameObject engineText;
     int[] resourceGains;
     int[] resourceStockpiles;
     private float lampSpeed = 1.6f;
     private float lampCounter = 0.2f;
-    private int activeLamps = 5;
+    private int activeLamps = 1;
     public GameObject[] lamps;
+    public GameObject[] lampTexts;
     public Sprite[] lampSprites;
     int currentLamp = 0;
 
     public AudioSource buttonSound;
     public AudioSource[] clickSounds;
+
+    public AnimationCurve[] levels;
+
 
     List<string> part1 = new List<string>();
     List<string> part2 = new List<string>();
@@ -52,11 +57,47 @@ public class GameController : MonoBehaviour {
     List<string> part29 = new List<string>();
     List<string> part30 = new List<string>();
 
+    List<string> engineNames1 = new List<string>();
+    List<string> engineNames2 = new List<string>();
+    List<string> engineNamesCombo = new List<string>();
+
     // Use this for initialization
     void Start () {
 
         resourceGains = new int[10];
         resourceStockpiles = new int[10];
+
+        engineNames1.Add("Eucalyptus");
+        engineNames1.Add("Anthracite");
+        engineNames1.Add("Benzene");
+        engineNames1.Add("Nucular");
+        engineNames1.Add("Antiquark");
+        engineNames1.Add("Eleriac");
+        engineNames1.Add("Dialectical");
+        engineNames1.Add("Dilithium");
+        engineNames1.Add("Holtzman");
+        engineNames1.Add("Spirit");
+
+        engineNames2.Add("Stove");
+        engineNames2.Add("Locomotivator");
+        engineNames2.Add("Combustor");
+        engineNames2.Add("Accelerator");
+        engineNames2.Add("Pump");
+        engineNames2.Add("Kettle");
+        engineNames2.Add("Persuader");
+        engineNames2.Add("Warpdriver");
+        engineNames2.Add("Folder");
+        engineNames2.Add("Self-Determiner");
+        // second part of names should be randomised
+        engineNames2.Sort((x, y) => Random.value < 0.5f ? -1 : 1);
+        
+        for (int i = 0; i < engineNames1.Count; i++)
+        {
+            engineNamesCombo.Add(engineNames1[i] + "-" + engineNames2[i]);
+            Debug.Log(engineNamesCombo[i]);
+        }
+
+        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
 
         part1.Add("mainly ");
         part1.Add("fabulously ");
@@ -471,7 +512,10 @@ public class GameController : MonoBehaviour {
         {
             activeLamps = lamps.Length;
         }
-        Debug.Log(activeLamps);
+        lampTexts[activeLamps].SetActive(true);
+        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
+
+
     }
 
     void decrementActiveLamps()
@@ -481,13 +525,46 @@ public class GameController : MonoBehaviour {
         {
             activeLamps = 1;
         }
+        lampTexts[activeLamps + 1].SetActive(false);
+        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
+    }
+
+    bool PayForDiscover(int worldType)
+    {
+        Debug.Log("Approaching world type " + worldType.ToString());
+        bool canPay = true;
+        for (int i = 0; i < worldType; i++)
+        {
+
+            Debug.Log("Drawing from resource number " + i.ToString());
+            // resource cost is tenfold the step removed, 10 for first, 100 for second
+            // first pass, check if there are enough resources
+            Debug.Log("Resource cost would be " + Mathf.Pow(10, (worldType - i)));
+            if (resourceStockpiles[i] < Mathf.Pow(10, (worldType - i)))
+            {
+                Debug.Log("Not enough resource " + i.ToString());
+                return false;
+            }
+
+        }
+
+        return true;
+
+        for (int i = 0; i < worldType; i++)
+        {
+            // resource cost is tenfold the step removed, 10 for first, 100 for second
+            // first pass, check if there are enough resources
+            
+
+        }
+
+        IncrementActiveLamps();
+
     }
 
     public void DiscoverNewPlanet()
     {
 
-        // play sound
-        buttonSound.Play();
 
         int firstNumber;
         firstNumber = Random.Range(0, 2);
@@ -518,7 +595,10 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < 30; i++)
         {
 
-            quintillions[i] = Random.Range(0, 10);
+            int curveRandomByLevel = Mathf.FloorToInt(CurveWeightedRandom(levels[activeLamps-1]) * 10);
+           
+            // Randomisation weighting should come from the type of world that has been reached
+            quintillions[i] = curveRandomByLevel;
             if(quintillions[i] != 0)
             {
                 leadingZeroes = false;
@@ -593,14 +673,19 @@ public class GameController : MonoBehaviour {
             worldText = "The probe got lost!";
             mainText.GetComponent<Text>().text = worldText;
         }
+
+        PayForDiscover(quintillions[8]);
+
+        // play sound
+        buttonSound.Play();
+
+
         // Increment resource gain from that type of world
         resourceGains[quintillions[8]] += 1;
         string resourceText = "+";
         string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
         resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
-
-
-
+        
         mainText.GetComponent<Text>().text = worldText;
         ChangeCameraBackgroundColour(quintillions[1]);
     }
@@ -716,7 +801,31 @@ void ChangeCameraBackgroundColour(int colourType)
 
     }
 
+    void UpdateEngineName(int engineLevel)
+    {
 
 
-    
+        engineText.GetComponent<Text>().text = "";
+
+    }
+
+    public void ToggleSound()
+    {
+        Debug.Log("Sound toggle");
+        if (Camera.main.transform.GetComponent<AudioListener>().enabled)
+        {
+            Camera.main.transform.GetComponent<AudioListener>().enabled = false;
+        }
+        else
+        {
+            Camera.main.transform.GetComponent<AudioListener>().enabled = true;
+        }
+    }
+
+    float CurveWeightedRandom(AnimationCurve curve)
+    {
+        return curve.Evaluate(Random.value);
+    }
+
+   
 }
