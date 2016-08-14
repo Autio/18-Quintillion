@@ -7,20 +7,25 @@ public class GameController : MonoBehaviour {
 
     public GameObject worldNumberText;
     public GameObject mainText;
+    public GameObject rankText;
     public GameObject[] resourceTexts;
     public GameObject[] resourceStockpileTexts;
     public GameObject engineText;
+    public GameObject textSpawn;
     int[] resourceGains;
     int[] resourceStockpiles;
-    private float lampSpeed = 1.6f;
+    private float lampSpeed = 1.7f;
     private float lampCounter = 0.2f;
-    private int activeLamps = 1;
+    private int activeLamps = 2;
     public GameObject[] lamps;
     public GameObject[] lampTexts;
     public Sprite[] lampSprites;
+    public GameObject[] blinkArrows;
+    public Sprite[] blinkArrowSprites;
     int currentLamp = 0;
 
     public AudioSource buttonSound;
+    public AudioSource failedLaunch;
     public AudioSource[] clickSounds;
 
     public AnimationCurve[] levels;
@@ -131,16 +136,16 @@ public class GameController : MonoBehaviour {
         part3.Add("heart-breakingly ");
         part3.Add("philosophically ");
 
-        part4.Add("exceptional, ");
         part4.Add("unremarkable, ");
-        part4.Add("improbable, ");
-        part4.Add("astounding, ");
-        part4.Add("amusing, ");
-        part4.Add("flourishing, ");
-        part4.Add("wearisome, ");
         part4.Add("suspect, ");
-        part4.Add("legendary, ");
+        part4.Add("improbable, ");
+        part4.Add("wearisome, ");
+        part4.Add("amusing, ");
         part4.Add("porous, ");
+        part4.Add("flourishing, ");
+        part4.Add("astounding, ");
+        part4.Add("exceptional, ");
+        part4.Add("legendary, ");
 
         part5.Add("hollow and ");
         part5.Add("dense and ");
@@ -490,6 +495,19 @@ public class GameController : MonoBehaviour {
             }
         }
 
+        // Also flash the corresponding arrow
+        blinkArrows[currentLamp].GetComponent<SpriteRenderer>().sprite = blinkArrowSprites[1];
+
+        for (int i = 0; i < lamps.Length; i++)
+        {
+            if (i != currentLamp)
+            {
+                blinkArrows[i].GetComponent<SpriteRenderer>().sprite = blinkArrowSprites[0];
+            }
+        }
+
+
+
 
         // RESOURCES also get incremented here
 
@@ -510,10 +528,13 @@ public class GameController : MonoBehaviour {
         activeLamps += 1;
         if(activeLamps > lamps.Length - 1)
         {
+            
             activeLamps = lamps.Length;
+
         }
-        lampTexts[activeLamps].SetActive(true);
+        lampTexts[activeLamps - 1].SetActive(true);
         engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
+
 
 
     }
@@ -529,7 +550,7 @@ public class GameController : MonoBehaviour {
         engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
     }
 
-    bool PayForDiscover(int worldType)
+    bool CanPayForDiscovery(int worldType)
     {
         Debug.Log("Approaching world type " + worldType.ToString());
         bool canPay = true;
@@ -539,9 +560,10 @@ public class GameController : MonoBehaviour {
             Debug.Log("Drawing from resource number " + i.ToString());
             // resource cost is tenfold the step removed, 10 for first, 100 for second
             // first pass, check if there are enough resources
-            Debug.Log("Resource cost would be " + Mathf.Pow(10, (worldType - i)));
-            if (resourceStockpiles[i] < Mathf.Pow(10, (worldType - i)))
+            Debug.Log("Resource cost would be " + Mathf.FloorToInt((worldType - i) * (worldType - i) * 10));
+            if (resourceStockpiles[i] < Mathf.FloorToInt((worldType - i) * (worldType - i) * 10))
             {
+                
                 Debug.Log("Not enough resource " + i.ToString());
                 return false;
             }
@@ -575,11 +597,11 @@ public class GameController : MonoBehaviour {
         {
             outputNumber += firstNumber.ToString();
             leadingZeroes = false;
-        }      
+        }
 
         int secondNumber = Random.Range(0, 9);
-        if(!leadingZeroes)
-        { 
+        if (!leadingZeroes)
+        {
             outputNumber += secondNumber.ToString();
             outputNumber += ",";
         }
@@ -595,11 +617,11 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < 30; i++)
         {
 
-            int curveRandomByLevel = Mathf.FloorToInt(CurveWeightedRandom(levels[activeLamps-1]) * 10);
-           
+            int curveRandomByLevel = Mathf.FloorToInt(CurveWeightedRandom(levels[activeLamps - 1]) * 10);
+
             // Randomisation weighting should come from the type of world that has been reached
             quintillions[i] = curveRandomByLevel;
-            if(quintillions[i] != 0)
+            if (quintillions[i] != 0)
             {
                 leadingZeroes = false;
             }
@@ -612,7 +634,7 @@ public class GameController : MonoBehaviour {
             if (!leadingZeroes)
             {
                 outputNumber += quintillions[i].ToString();
-                if ((i + 1) % 3 == 0 && (i+1) < 30)
+                if ((i + 1) % 3 == 0 && (i + 1) < 30)
                 {
                     outputNumber += ",";
                 }
@@ -663,7 +685,7 @@ public class GameController : MonoBehaviour {
             worldText += part28[quintillions[27]];
             worldText += part29[quintillions[28]];
 
-     
+
 
         }
         catch
@@ -674,20 +696,60 @@ public class GameController : MonoBehaviour {
             mainText.GetComponent<Text>().text = worldText;
         }
 
-        PayForDiscover(quintillions[8]);
+        if(CanPayForDiscovery(quintillions[8]))
+        {
+            // play sound
+            buttonSound.Play();
 
-        // play sound
-        buttonSound.Play();
+            // take resources
+            for (int i = 0; i < quintillions[8]; i++)
+            {
+       
+                Debug.Log("Drawing from resource number " + i.ToString());
+                // resource cost is tenfold the step removed, 10 for first, 100 for second
+                // first pass, check if there are enough resources
+                //resourceStockpiles[i] -= Mathf.FloorToInt(Mathf.Pow(10, (quintillions[8] - i)));
+                resourceStockpiles[i] -= Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10);
+
+                // Create icon to show cost
+                GameObject newText = Instantiate(textSpawn, resourceStockpileTexts[i].transform.position, Quaternion.identity) as GameObject;
+                newText.transform.parent = (GameObject.Find("Canvas").transform);
+                newText.GetComponent<Text>().text = Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10).ToString("N0");
+            }
+            // Increment resource gain from that type of world
+            resourceGains[quintillions[8]] += 1;
+            string resourceText = "+";
+            string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
+            resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
+
+            mainText.GetComponent<Text>().text = worldText;
+            ChangeCameraBackgroundColour(quintillions[1]);
+
+            Debug.Log(quintillions[8].ToString() + " al " + (activeLamps - 1).ToString());
 
 
-        // Increment resource gain from that type of world
-        resourceGains[quintillions[8]] += 1;
-        string resourceText = "+";
-        string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
-        resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
-        
-        mainText.GetComponent<Text>().text = worldText;
-        ChangeCameraBackgroundColour(quintillions[1]);
+            if (quintillions[8] == (activeLamps - 1))
+            {
+                // Allow next world to be reached
+                IncrementActiveLamps();
+            }
+
+            // END CONDITIONY THING
+            if (quintillions[8] == 9)
+            {
+                rankText.GetComponent<Text>().text = "\"Enlightened\"";
+            }
+        }
+        else
+        {
+            failedLaunch.Play();
+            worldNumberText.GetComponent<Text>().text = "World: Same old";
+            mainText.GetComponent<Text>().text = "Not enough resources to send probe there.";
+        }
+
+
+
+
     }
 
 
