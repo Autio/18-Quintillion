@@ -8,6 +8,8 @@ public class GameController : MonoBehaviour {
     public GameObject worldNumberText;
     public GameObject mainText;
     public GameObject rankText;
+    public GameObject tvText;
+    public GameObject[] debugTexts;
     public GameObject[] resourceTexts;
     public GameObject[] resourceStockpileTexts;
     public GameObject engineText;
@@ -27,9 +29,11 @@ public class GameController : MonoBehaviour {
     public AudioSource buttonSound;
     public AudioSource failedLaunch;
     public AudioSource[] clickSounds;
+    public AudioSource arrivalSound;
 
     public AnimationCurve[] levels;
 
+    private bool discoveringPlanet = false;
 
     List<string> part1 = new List<string>();
     List<string> part2 = new List<string>();
@@ -66,6 +70,7 @@ public class GameController : MonoBehaviour {
     List<string> engineNames2 = new List<string>();
     List<string> engineNamesCombo = new List<string>();
 
+    List<string> cameraFails = new List<string>();
     // Use this for initialization
     void Start () {
 
@@ -103,6 +108,16 @@ public class GameController : MonoBehaviour {
         }
 
         engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
+
+
+        cameraFails.Add("Camera out of battery!");
+        cameraFails.Add("Lens cap left on, please remove lens cap.");
+        cameraFails.Add("General camera error.");
+        cameraFails.Add("Camera transmission error.");
+        cameraFails.Add("Please plug in camera cable - red.");
+        cameraFails.Add("Camera not working, please turn off and on again.");
+        cameraFails.Add("Camera out of battery! Please send money to Probatron Services for replacement.");
+
 
         part1.Add("mainly ");
         part1.Add("fabulously ");
@@ -200,7 +215,7 @@ public class GameController : MonoBehaviour {
         part9.Add("UNUNTRIUM, ");
         part9.Add("DILITHIUM, ");
         part9.Add("MELANGE, ");
-        part9.Add("COMPREHENSION OF THE ABSOLUTE, ");
+        part9.Add("HYPE,");
 
         part10.Add("its meadows ");
         part10.Add("its caverns ");
@@ -586,170 +601,181 @@ public class GameController : MonoBehaviour {
 
     public void DiscoverNewPlanet()
     {
-
-
-        int firstNumber;
-        firstNumber = Random.Range(0, 2);
-
-        string outputNumber = "World: ";
-        bool leadingZeroes = true;
-        if (firstNumber > 0)
-        {
-            outputNumber += firstNumber.ToString();
-            leadingZeroes = false;
-        }
-
-        int secondNumber = Random.Range(0, 9);
-        if (!leadingZeroes)
-        {
-            outputNumber += secondNumber.ToString();
-            outputNumber += ",";
-        }
-        else if (secondNumber > 0)
-        {
-            outputNumber += secondNumber.ToString();
-            outputNumber += ",";
-            leadingZeroes = false;
-        }
-
-        Debug.Log(firstNumber.ToString() + " " + secondNumber.ToString());
-        int[] quintillions = new int[30];
-        for (int i = 0; i < 30; i++)
+        if (!discoveringPlanet)
         {
 
-            int curveRandomByLevel = Mathf.FloorToInt(CurveWeightedRandom(levels[activeLamps - 1]) * 10);
+            discoveringPlanet = true;
 
-            // Randomisation weighting should come from the type of world that has been reached
-            quintillions[i] = curveRandomByLevel;
-            if (quintillions[i] != 0)
+            int firstNumber;
+            firstNumber = Random.Range(0, 2);
+
+            string outputNumber = "World: ";
+            bool leadingZeroes = true;
+            if (firstNumber > 0)
             {
+                outputNumber += firstNumber.ToString();
                 leadingZeroes = false;
             }
-            if (i == 8)
-            {
-                // Cheekily replace the 9th number with the currently active lamp number
-                quintillions[i] = currentLamp;
 
-            }
+            int secondNumber = Random.Range(0, 9);
             if (!leadingZeroes)
             {
-                outputNumber += quintillions[i].ToString();
-                if ((i + 1) % 3 == 0 && (i + 1) < 30)
+                outputNumber += secondNumber.ToString();
+                outputNumber += ",";
+            }
+            else if (secondNumber > 0)
+            {
+                outputNumber += secondNumber.ToString();
+                outputNumber += ",";
+                leadingZeroes = false;
+            }
+
+            Debug.Log(firstNumber.ToString() + " " + secondNumber.ToString());
+            int[] quintillions = new int[30];
+            for (int i = 0; i < 30; i++)
+            {
+
+                int curveRandomByLevel = Mathf.FloorToInt(CurveWeightedRandom(levels[activeLamps - 1]) * 10);
+
+                // Randomisation weighting should come from the type of world that has been reached
+                quintillions[i] = curveRandomByLevel;
+                if (quintillions[i] != 0)
                 {
-                    outputNumber += ",";
+                    leadingZeroes = false;
+                }
+                if (i == 8)
+                {
+                    // Cheekily replace the 9th number with the currently active lamp number
+                    quintillions[i] = currentLamp;
+
+                }
+                if (!leadingZeroes)
+                {
+                    outputNumber += quintillions[i].ToString();
+                    if ((i + 1) % 3 == 0 && (i + 1) < 30)
+                    {
+                        outputNumber += ",";
+                    }
                 }
             }
-        }
 
 
-        // Write numbers in number chain
-        Debug.Log(outputNumber);
-        worldNumberText.GetComponent<Text>().text = outputNumber;
+            // Write numbers in number chain
+            Debug.Log(outputNumber);
+            worldNumberText.GetComponent<Text>().text = outputNumber;
 
 
-        // Generate world description
-        string worldText = "";
-        worldText += "The probe has landed on a ";
+            // Generate world description
+            string worldText = "";
+            worldText += "The probe has landed on a ";
 
-        try
-        {
-
-
-            worldText += part1[quintillions[0]];
-            worldText += part2[quintillions[1]]; // colour
-            worldText += part3[quintillions[2]];
-            worldText += part4[quintillions[3]];
-            worldText += part5[quintillions[4]];
-            worldText += part6[quintillions[5]];
-            worldText += part7[quintillions[6]];
-            worldText += part8[quintillions[7]];
-            worldText += part9[quintillions[8]]; // Resources!
-            worldText += part10[quintillions[9]];
-            worldText += part11[quintillions[10]];
-            worldText += part12[quintillions[11]];
-            worldText += part13[quintillions[12]];
-            worldText += part14[quintillions[13]];
-            worldText += part15[quintillions[14]];
-            worldText += part16[quintillions[15]];
-            worldText += part17[quintillions[16]];
-            worldText += part18[quintillions[17]];
-            worldText += part19[quintillions[18]];
-            worldText += part20[quintillions[19]];
-            worldText += part21[quintillions[20]];
-            worldText += part22[quintillions[21]];
-            worldText += part23[quintillions[22]];
-            worldText += part24[quintillions[23]];
-            worldText += part25[quintillions[24]];
-            worldText += part26[quintillions[25]];
-            worldText += part27[quintillions[26]];
-            worldText += part28[quintillions[27]];
-            worldText += part29[quintillions[28]];
-
-
-
-        }
-        catch
-        {
-            worldText = "The probe got lost!";
-            worldNumberText.GetComponent<Text>().text = "World: ???";
-            worldText = "The probe got lost!";
-            mainText.GetComponent<Text>().text = worldText;
-        }
-
-        if(CanPayForDiscovery(quintillions[8]))
-        {
-            // play sound
-            buttonSound.Play();
-
-            // take resources
-            for (int i = 0; i < quintillions[8]; i++)
+            try
             {
-       
-                Debug.Log("Drawing from resource number " + i.ToString());
-                // resource cost is tenfold the step removed, 10 for first, 100 for second
-                // first pass, check if there are enough resources
-                //resourceStockpiles[i] -= Mathf.FloorToInt(Mathf.Pow(10, (quintillions[8] - i)));
-                resourceStockpiles[i] -= Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10);
 
-                // Create icon to show cost
-                GameObject newText = Instantiate(textSpawn, resourceStockpileTexts[i].transform.position, Quaternion.identity) as GameObject;
-                newText.transform.parent = (GameObject.Find("Canvas").transform);
-                newText.GetComponent<Text>().text = Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10).ToString("N0");
+
+                worldText += part1[quintillions[0]];
+                worldText += part2[quintillions[1]]; // colour
+                worldText += part3[quintillions[2]];
+                worldText += part4[quintillions[3]];
+                worldText += part5[quintillions[4]];
+                worldText += part6[quintillions[5]];
+                worldText += part7[quintillions[6]];
+                worldText += part8[quintillions[7]];
+                worldText += part9[quintillions[8]]; // Resources!
+                worldText += part10[quintillions[9]];
+                worldText += part11[quintillions[10]];
+                worldText += part12[quintillions[11]];
+                worldText += part13[quintillions[12]];
+                worldText += part14[quintillions[13]];
+                worldText += part15[quintillions[14]];
+                worldText += part16[quintillions[15]];
+                worldText += part17[quintillions[16]];
+                worldText += part18[quintillions[17]];
+                worldText += part19[quintillions[18]];
+                worldText += part20[quintillions[19]];
+                worldText += part21[quintillions[20]];
+                worldText += part22[quintillions[21]];
+                worldText += part23[quintillions[22]];
+                worldText += part24[quintillions[23]];
+                worldText += part25[quintillions[24]];
+                worldText += part26[quintillions[25]];
+                worldText += part27[quintillions[26]];
+                worldText += part28[quintillions[27]];
+                worldText += part29[quintillions[28]];
+
+
+
             }
-            // Increment resource gain from that type of world
-            resourceGains[quintillions[8]] += 1;
-            string resourceText = "+";
-            string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
-            resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
-
-            mainText.GetComponent<Text>().text = worldText;
-            ChangeCameraBackgroundColour(quintillions[1]);
-
-            Debug.Log(quintillions[8].ToString() + " al " + (activeLamps - 1).ToString());
-
-
-            if (quintillions[8] == (activeLamps - 1))
+            catch
             {
-                // Allow next world to be reached
-                IncrementActiveLamps();
+                worldText = "The probe got lost!";
+                worldNumberText.GetComponent<Text>().text = "World: ???";
+                worldText = "The probe got lost!";
+                mainText.GetComponent<Text>().text = worldText;
             }
 
-            // END CONDITIONY THING
-            if (quintillions[8] == 9)
+            if (CanPayForDiscovery(quintillions[8]))
             {
-                rankText.GetComponent<Text>().text = "\"Enlightened\"";
+                // play sound
+                buttonSound.Play();
+
+                // take resources
+                for (int i = 0; i < quintillions[8]; i++)
+                {
+
+                    Debug.Log("Drawing from resource number " + i.ToString());
+                    // resource cost is tenfold the step removed, 10 for first, 100 for second
+                    // first pass, check if there are enough resources
+                    //resourceStockpiles[i] -= Mathf.FloorToInt(Mathf.Pow(10, (quintillions[8] - i)));
+                    resourceStockpiles[i] -= Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10);
+
+                    // Create icon to show cost
+                    GameObject newText = Instantiate(textSpawn, resourceStockpileTexts[i].transform.position, Quaternion.identity) as GameObject;
+                    newText.transform.parent = (GameObject.Find("Canvas").transform);
+                    newText.GetComponent<Text>().text = Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10).ToString("N0");
+                }
+                // Increment resource gain from that type of world
+                resourceGains[quintillions[8]] += 1;
+                string resourceText = "+";
+                string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
+                resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
+
+                StartCoroutine(ChangeWorldTextWithDelay(worldText, 2.2f));
+                // mainText.GetComponent<Text>().text = worldText;
+                ChangeCameraBackgroundColour(quintillions[1]);
+
+                Debug.Log(quintillions[8].ToString() + " al " + (activeLamps - 1).ToString());
+
+
+                if (quintillions[8] == (activeLamps - 1))
+                {
+                    // Allow next world to be reached
+                    IncrementActiveLamps();
+                }
+
+                // END CONDITIONY THING
+                if (quintillions[8] == 9)
+                {
+                    rankText.GetComponent<Text>().text = "\"Enlightened\"";
+                }
+
+                ChangeProbecamText();
+
             }
+            else
+            {
+                failedLaunch.Play();
+                worldNumberText.GetComponent<Text>().text = "World: Same old";
+                mainText.GetComponent<Text>().text = "Not enough resources to send probe there.";
+                discoveringPlanet = false;
+            }
+
+
         }
-        else
         {
             failedLaunch.Play();
-            worldNumberText.GetComponent<Text>().text = "World: Same old";
-            mainText.GetComponent<Text>().text = "Not enough resources to send probe there.";
+
         }
-
-
-
-
     }
 
 
@@ -868,6 +894,47 @@ void ChangeCameraBackgroundColour(int colourType)
 
 
         engineText.GetComponent<Text>().text = "";
+
+    }
+
+    private IEnumerator ChangeWorldTextWithDelay(string s, float d)
+    {
+        mainText.GetComponent<Text>().text = "";
+        yield return new WaitForSeconds(2.2f);
+        mainText.GetComponent<Text>().text = s;
+        discoveringPlanet = false;
+    }
+
+    private IEnumerator ChangeProbecamWithDelay(string s, float d)
+    {
+        string waitingText = "Hyperspace!\n\nApproaching new world";
+        for(int i = 0; i < 4; i++)
+        {
+            yield return new WaitForSeconds(0.3f);
+            waitingText += ".";
+            tvText.GetComponent<Text>().text = waitingText;
+
+        }
+
+
+        yield return new WaitForSeconds(d);
+        arrivalSound.Play();
+        tvText.GetComponent<Text>().text = s;
+    }
+
+    public void ChangeProbecamText()
+    {
+        // overkill
+        foreach(GameObject g in debugTexts)
+        {
+            g.SetActive(false);
+        }
+
+        // clear old text
+
+        string camText = cameraFails[Random.Range(0, cameraFails.Count)];
+        StartCoroutine(ChangeProbecamWithDelay(camText, 0.9f));
+
 
     }
 
