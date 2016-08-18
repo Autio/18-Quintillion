@@ -477,7 +477,12 @@ public class GameController : MonoBehaviour {
         {
             IncrementActiveLamps();
         }
-	}
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RandomiseWorldNumber();
+        }
+
+    }
 
     void IncrementLamp()
     {
@@ -662,7 +667,7 @@ public class GameController : MonoBehaviour {
 
             // Write numbers in number chain
             Debug.Log(outputNumber);
-            worldNumberText.GetComponent<Text>().text = outputNumber;
+            //worldNumberText.GetComponent<Text>().text = outputNumber;
 
 
             // Generate world description
@@ -739,8 +744,9 @@ public class GameController : MonoBehaviour {
                 string resourceText = "+";
                 string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
                 resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
+                StartCoroutine(FlickerWorldNumber(1.8f));           
+                StartCoroutine(ChangeWorldTextWithDelay(worldText, outputNumber, 2.2f));
 
-                StartCoroutine(ChangeWorldTextWithDelay(worldText, 2.2f));
                 // mainText.GetComponent<Text>().text = worldText;
                 ChangeCameraBackgroundColour(quintillions[1]);
 
@@ -897,11 +903,48 @@ void ChangeCameraBackgroundColour(int colourType)
 
     }
 
-    private IEnumerator ChangeWorldTextWithDelay(string s, float d)
+    private IEnumerator FlickerWorldNumber(float d)
+    {
+        float flickerInterval = 0.08f;
+        for (int i = 0; i < d/flickerInterval; i++)
+        {
+            yield return new WaitForSeconds(flickerInterval);
+
+            RandomiseWorldNumber();
+
+        }
+    }
+
+    void RandomiseWorldNumber()
+    {
+        string outputNumber = "World: ";
+        if (Random.Range(0, 1) < 1)
+        {
+            outputNumber = "World: 1";
+        }
+        outputNumber += Random.Range(0, 9).ToString() + ",";
+
+        for (int i = 0; i < 30; i++)
+        {
+            outputNumber += Random.Range(0, 9).ToString();
+
+            if ((i + 1) % 3 == 0 && (i + 1) < 30)
+            {
+                outputNumber += ",";
+            }
+        }
+        worldNumberText.GetComponent<Text>().text = outputNumber;
+
+
+    }
+
+    private IEnumerator ChangeWorldTextWithDelay(string s, string worldNumber, float d)
     {
         mainText.GetComponent<Text>().text = "";
         yield return new WaitForSeconds(2.2f);
         mainText.GetComponent<Text>().text = s;
+        worldNumberText.GetComponent<Text>().text = worldNumber;
+
         discoveringPlanet = false;
     }
 
