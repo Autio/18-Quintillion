@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
     public GameObject[] debugTexts;
     public GameObject[] resourceTexts;
     public GameObject[] resourceStockpileTexts;
+    public GameObject[] resourceCostTexts;
     public GameObject engineText;
     public GameObject textSpawn;
     int[] resourceGains;
@@ -120,7 +121,6 @@ public class GameController : MonoBehaviour {
         cameraFails.Add("Now don't panic but the camera doesn't seem to be working");
         cameraFails.Add("Camera gone broke down again");
         cameraFails.Add("The camera is out of batteries but can we suggest you use your imagination?");
-
 
 
         part1.Add("mainly ");
@@ -545,6 +545,27 @@ public class GameController : MonoBehaviour {
             }
 
         }
+
+        // Update costs accordingly: 
+        // Costs in lights above = 0
+        // Costs in lights below, follow rule
+        for (int i = 0; i < lamps.Length - 1; i++)
+        {
+            int cost = Mathf.FloorToInt((currentLamp - 1 - i) * (currentLamp - 1 - i) * 10);
+
+            if (i >= currentLamp)
+            {
+                cost = 0;
+            }
+         
+            if(cost != 0)
+            {
+                resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + cost.ToString("N0");
+            } else
+            {
+                resourceCostTexts[i].GetComponent<Text>().text = "Cost:";
+            }
+        }
     }
 
     void IncrementActiveLamps()
@@ -580,11 +601,11 @@ public class GameController : MonoBehaviour {
         bool canPay = true;
         for (int i = 0; i < worldType; i++)
         {
-
+            int cost = Mathf.FloorToInt((worldType - i) * (worldType - i) * 10);
             Debug.Log("Drawing from resource number " + i.ToString());
             // resource cost is tenfold the step removed, 10 for first, 100 for second
             // first pass, check if there are enough resources
-            Debug.Log("Resource cost would be " + Mathf.FloorToInt((worldType - i) * (worldType - i) * 10));
+            Debug.Log("Resource cost would be " + cost.ToString("N0"));
             if (resourceStockpiles[i] < Mathf.FloorToInt((worldType - i) * (worldType - i) * 10))
             {
                 
