@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: a38a8afcc6c49f444851ffe23633569b
-timeCreated: 1471690372
+guid: 270e5d47b63927745afeb2773ff29055
+timeCreated: 1471689864
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Dashboard Lamp_0
-    21300002: Dashboard Lamp_1
-    21300004: Dashboard Lamp_2
+    21300000: Dashboard Lamp (2)_0
+    21300002: Dashboard Lamp (2)_1
+    21300004: Dashboard Lamp (2)_2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -47,7 +47,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 9
+  spritePixelsToUnits: 8
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
@@ -56,7 +56,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Dashboard Lamp_0
+      name: Dashboard Lamp (2)_0
       rect:
         serializedVersion: 2
         x: 0
@@ -69,7 +69,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Dashboard Lamp_1
+      name: Dashboard Lamp (2)_1
       rect:
         serializedVersion: 2
         x: 64
@@ -82,7 +82,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Dashboard Lamp_2
+      name: Dashboard Lamp (2)_2
       rect:
         serializedVersion: 2
         x: 128

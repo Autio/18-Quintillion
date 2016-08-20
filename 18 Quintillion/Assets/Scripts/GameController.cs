@@ -111,12 +111,16 @@ public class GameController : MonoBehaviour {
 
 
         cameraFails.Add("Camera out of battery!");
-        cameraFails.Add("Lens cap left on, please remove lens cap.");
-        cameraFails.Add("General camera error.");
-        cameraFails.Add("Camera transmission error.");
-        cameraFails.Add("Please plug in camera cable - red.");
-        cameraFails.Add("Camera not working, please turn off and on again.");
-        cameraFails.Add("Camera out of battery! Please send money to Probatron Services for replacement.");
+        cameraFails.Add("Lens cap left on, please remove lens cap");
+        cameraFails.Add("General camera error");
+        cameraFails.Add("Camera transmission error");
+        cameraFails.Add("Please plug in camera cable ");
+        cameraFails.Add("Camera not working, please turn off and on again");
+        cameraFails.Add("Camera out of battery! Please send money to Probatron Services for replacement");
+        cameraFails.Add("Now don't panic but the camera doesn't seem to be working");
+        cameraFails.Add("Camera gone broke down again");
+        cameraFails.Add("The camera is out of batteries but can we suggest you use your imagination?");
+
 
 
         part1.Add("mainly ");
@@ -536,7 +540,7 @@ public class GameController : MonoBehaviour {
             if (resourceGains[i] != 0)
             {
                 resourceStockpiles[i] += resourceGains[i];
-                resourceStockpileTexts[i].GetComponent<Text>().text = resourceStockpiles[i].ToString("N0");
+                resourceStockpileTexts[i].GetComponent<Text>().text = "Reserve: " + resourceStockpiles[i].ToString("N0");
                 
             }
 
