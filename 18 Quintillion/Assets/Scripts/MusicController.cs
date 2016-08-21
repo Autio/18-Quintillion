@@ -7,6 +7,8 @@ public class MusicController : MonoBehaviour {
     public AudioSource musicPlayer;
     public AudioClip[] musicBlockClips;
     private bool playingMusic = true;
+    private int musicLevel = 1;
+
     // Use this for initialization
 	void Start () {
         StartCoroutine(playNextSound());
@@ -21,7 +23,12 @@ public class MusicController : MonoBehaviour {
     {
         while (playingMusic)
         {
-            musicPlayer.GetComponent<AudioSource>().clip = musicBlockClips[Random.Range(0, musicBlockClips.Length)];
+            int maxClips = this.gameObject.GetComponent<GameController>().costLevel;
+            if (maxClips > musicBlockClips.Length)
+            {
+                maxClips = musicBlockClips.Length;
+            }
+            musicPlayer.GetComponent<AudioSource>().clip = musicBlockClips[Random.Range(0, maxClips)];
             musicPlayer.GetComponent<AudioSource>().Play();
             yield return new WaitForSeconds(musicPlayer.GetComponent<AudioSource>().clip.length);
         }

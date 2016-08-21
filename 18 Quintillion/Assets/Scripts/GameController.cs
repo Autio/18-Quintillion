@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class GameController : MonoBehaviour {
 
+    private float secondTick = 1.0f;
+    private int levelTicker = 0;
+
     public GameObject worldNumberText;
     public GameObject mainText;
     public GameObject rankText;
@@ -34,9 +37,21 @@ public class GameController : MonoBehaviour {
 
     public AnimationCurve[] levels;
 
+
+    public int costLevel = 1;
     private bool discoveringPlanet = false;
 
-    List<string> part0 = new List<string>();
+    // Plot progression
+    private int progressionChance = 0;
+
+    // quest state
+    public int questTargetWorld = -1;
+    private int questWorldsVisited = 0;
+
+
+    // quest descriptions
+    List<string> questTexts = new List<string>();
+
     List<string> part1 = new List<string>();
     List<string> part2 = new List<string>();
     List<string> part3 = new List<string>();
@@ -67,6 +82,7 @@ public class GameController : MonoBehaviour {
     List<string> part28 = new List<string>();
     List<string> part29 = new List<string>();
     List<string> part30 = new List<string>();
+    List<string> part31 = new List<string>();
 
     List<string> engineNames1 = new List<string>();
     List<string> engineNames2 = new List<string>();
@@ -76,8 +92,17 @@ public class GameController : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-        resourceGains = new int[10];
-        resourceStockpiles = new int[10];
+       
+        questTargetWorld = -1;
+       
+        resourceGains = new int[11];
+        resourceStockpiles = new int[11];
+
+        resourceGains[0] = 1;
+
+        questTexts.Add("The probe lands on a blue planet twinkling in the night, weaving its way down through a heavy mist which blankets weary land. Mighty shapes jut out everywhere, resistant to scans, advanced technology or unusual geology. Small bands of local inhabitants, shrouded in hooded woollen robes, emerge from the greyness and surround your probe. They whisper of a great bearded being who once passed through these lands speaking in sweeping terms of unimaginable bliss. With his words the traveler lured the youth of the local tribe with itself off towards much vaunted miracles at the galactic centre, though what those anointed secrets exactly were, no-one here clearly remembers. The locals present you with an ingredient of Hype: Being Wisely Economical with Information.");
+        questTexts.Add("The probe lands on a bustling communications station which is the meeting place of a thousand races; the last, best hope for peace; the nexus of this corner of the galaxy. The probe is wined and dined and you can share a hundred tales, true or false, from the worlds you have visited. You acquire a second ingredient of Hype: Good Connections, a Wink and a Nice Big Smile.");
+        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew, merely doors that lead to other doors and corridors lined with strange mirrors wherein reanimated slivers of past lives, gilded memories of youth, a billion dreams of the future careening into each other in vivid colour and bewildering array. Highlights of life both fleshy and sublime. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond! And all with just one button - CONGRATULATIONS CLICKER.");
 
         engineNames1.Add("Wood");
         engineNames1.Add("Carbon");
@@ -110,7 +135,7 @@ public class GameController : MonoBehaviour {
             Debug.Log(engineNamesCombo[i]);
         }
 
-        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
+
 
 
         cameraFails.Add("Camera out of battery!");
@@ -128,13 +153,13 @@ public class GameController : MonoBehaviour {
 
         part1.Add("mainly ");
         part1.Add("fabulously ");
-        part1.Add("wholly ");
+        part1.Add("eye-poppingly ");
         part1.Add("remarkably ");
         part1.Add("glaringly ");
-        part1.Add("subtly ");
+        part1.Add("disgustingly ");
         part1.Add("entirely ");
         part1.Add("partly ");
-        part1.Add("seemingly ");
+        part1.Add("unnaturally ");
 
         part2.Add("pink, ");
         part2.Add("green, ");
@@ -147,7 +172,7 @@ public class GameController : MonoBehaviour {
         part2.Add("red, ");
         part2.Add("purple, ");
 
-        part3.Add("geologically ");
+        part3.Add("artistically ");
         part3.Add("biospherically ");
         part3.Add("aurally ");
         part3.Add("erotically ");
@@ -155,19 +180,19 @@ public class GameController : MonoBehaviour {
         part3.Add("atmospherically ");
         part3.Add("religiously ");
         part3.Add("ideologically ");
-        part3.Add("heart-breakingly ");
+        part3.Add("technically ");
         part3.Add("philosophically ");
 
         part4.Add("unremarkable, ");
-        part4.Add("suspect, ");
+        part4.Add("");
         part4.Add("improbable, ");
         part4.Add("wearisome, ");
         part4.Add("amusing, ");
         part4.Add("porous, ");
         part4.Add("flourishing, ");
-        part4.Add("astounding, ");
-        part4.Add("exceptional, ");
-        part4.Add("legendary, ");
+        part4.Add("perverted, ");
+        part4.Add("happening, ");
+        part4.Add("avant-garde, ");
 
         part5.Add("hollow and ");
         part5.Add("dense and ");
@@ -177,7 +202,7 @@ public class GameController : MonoBehaviour {
         part5.Add("delightfully ");
         part5.Add("invitingly ");
         part5.Add("incredibly smooth, ");
-        part5.Add("");
+        part5.Add("menacingly ");
         part5.Add("");
 
         part6.Add("tiny ");
@@ -203,9 +228,9 @@ public class GameController : MonoBehaviour {
         part7.Add("artefact ");
 
         part8.Add("heavy with ");
-        part8.Add("richly endowed with ");
+        part8.Add("richly endowed with readily explotable ");
         part8.Add("with just about enough harvestable ");
-        part8.Add("with heaps and heaps of ");
+        part8.Add("ready to feed our industry with heaps and heaps of ");
         part8.Add("replete with millions of tons of ");
         part8.Add("with modest reserves of ");
         part8.Add("bountifully laden with ");
@@ -262,7 +287,7 @@ public class GameController : MonoBehaviour {
         part13.Add("grass ");
         part13.Add("mushrooms ");
         part13.Add("lilies ");
-        part13.Add("pines ");
+        part13.Add("kumquats ");
         part13.Add("tulips ");
         part13.Add("ferns ");
         part13.Add("potatoes ");
@@ -279,7 +304,7 @@ public class GameController : MonoBehaviour {
         part14.Add("competing for space with ");
         part14.Add("as well as ");
 
-        part15.Add("tall ");
+        part15.Add("(probably) fermentable ");
         part15.Add("squat ");
         part15.Add("iridescent ");
         part15.Add("cropworthy ");
@@ -290,7 +315,7 @@ public class GameController : MonoBehaviour {
         part15.Add("velvety ");
         part15.Add("severely endangered ");
 
-        part16.Add("shrubs ");
+        part16.Add("shrubberies ");
         part16.Add("roots ");
         part16.Add("spruces ");
         part16.Add("vines ");
@@ -301,11 +326,11 @@ public class GameController : MonoBehaviour {
         part16.Add("pistachioes ");
         part16.Add("baobabs ");
 
-        part17.Add("which feed the memorably ");
-        part17.Add("which provide shelter for the ");
+        part17.Add("which form the primary sustenance of the native, memorably ");
+        part17.Add("which provide shelter for the indigenous ");
         part17.Add("frequently trapping the ");
         part17.Add("jealously guarded by ");
-        part17.Add("somehow guarding ");
+        part17.Add("providing protected habitats for the local ");
         part17.Add("entirely ignored by the ");
         part17.Add("prized by the ");
         part17.Add("tended by the ");
@@ -329,7 +354,7 @@ public class GameController : MonoBehaviour {
         part19.Add("bioluminescent ");
         part19.Add("altruistic ");
         part19.Add("cuddly ");
-        part19.Add("heptagonal ");
+        part19.Add("curiously heptagonal ");
         part19.Add("delicious ");
         part19.Add("delicate ");
         part19.Add("nocturnal ");
@@ -357,7 +382,7 @@ public class GameController : MonoBehaviour {
         part21.Add("pidgeons ");
 
         part22.Add("not forgetting the ");
-        part22.Add("who exist in a wary truce with the apex predators, the  ");
+        part22.Add("who exist in a wary truce with the world's apex predators, the  ");
         part22.Add("to be much preferred over the ");
         part22.Add("cohabiting the southern part with groups of ");
         part22.Add("cohabiting the northern part with groups of ");
@@ -367,7 +392,7 @@ public class GameController : MonoBehaviour {
         part22.Add("singing in polyphony with a small grouping of ");
         part22.Add("and the ");
 
-        part23.Add("musical ");
+        part23.Add("melodious ");
         part23.Add("wobbling ");
         part23.Add("massive ");
         part23.Add("miniscule ");
@@ -378,86 +403,183 @@ public class GameController : MonoBehaviour {
         part23.Add("two-faced ");
         part23.Add("bellicose ");
 
-        part24.Add("dolphinoids ");
-        part24.Add("annelids ");
-        part24.Add("pasta-shapes ");
-        part24.Add("bats ");
-        part24.Add("exopenguins ");
-        part24.Add("viruses ");
-        part24.Add("clouds ");
-        part24.Add("octopuses ");
-        part24.Add("sticks ");
-        part24.Add("trombones ");
+        part24.Add("dolphinoids");
+        part24.Add("annelids");
+        part24.Add("pasta-shapes");
+        part24.Add("bats");
+        part24.Add("exopenguins");
+        part24.Add("viruses");
+        part24.Add("clouds");
+        part24.Add("octopuses");
+        part24.Add("sticks");
+        part24.Add("trombones");
 
-        part25.Add("which lead us to a nation of ");
-        part25.Add("and tribes of ");
-        part25.Add("reared by communities of ");
-        part25.Add("hunting families of ");
-        part25.Add("roaming around vast cities of ");
-        part25.Add("dwelling in the ruined complexes of ");
-        part25.Add("projected to evolve into ");
-        part25.Add("pleading to become ");
-        part25.Add("domesticated by a civilisation of ");
-        part25.Add("carefully cultivated by a race of ");
+        part25.Add(". Riding these beasts there is a nation of ");
+        part25.Add(" and tribes of ");
+        part25.Add(" reared by communities of ");
+        part25.Add(" hunting families of ");
+        part25.Add(" roaming around vast cities of ");
+        part25.Add(" dwelling in the ruined complexes of ");
+        part25.Add(". These beings are projected to evolve into ");
+        part25.Add(". In barely comprehensible ways these creatures are pleading to become ");
+        part25.Add(" who have been domesticated by a civilisation of ");
+        part25.Add(" carefully cultivated by a race of ");
 
         part26.Add("barely sentient ");
         part26.Add("(some would say) primitive ");
-        part26.Add("sophisticated ");
-        part26.Add("simple but cooperative ");
+        part26.Add("highly opinionated ");
+        part26.Add("simple, cooperative and ultimately rather pathetic ");
         part26.Add("extraordinarily civilised ");
-        part26.Add("hermetic ");
-        part26.Add("pastoral ");
+        part26.Add("questionably garbed ");
+        part26.Add("painfully self-aware ");
         part26.Add("communist ");
         part26.Add("feudal-capitalistic ");
-        part26.Add("combative ");
+        part26.Add("threateningly well-endowed ");
 
         part27.Add("game developers ");
         part27.Add("boulders ");
-        part27.Add("thistles ");
+        part27.Add("stand-up comedians ");
         part27.Add("energy fields ");
         part27.Add("Australians ");
         part27.Add("microcrystals ");
-        part27.Add("jelly ");
+        part27.Add("jellies ");
         part27.Add("Neo-Kantians ");
         part27.Add("rhubarb-compote ");
         part27.Add("odours ");
 
         part28.Add("who seem quite happy to trade us their ");
-        part28.Add("who could be made to part with their ");
+        part28.Add("who *could* be made to part with their ");
         part28.Add("who will be readily relieved of their ");
-        part28.Add("who in rituals of ecstasy discard heaps and heaps of their ");
-        part28.Add("whose elders present to us their  ");
+        part28.Add("who in endless rituals of ecstasy jettison heaps and heaps of their ");
+        part28.Add("whose elders present to us their ");
         part28.Add("who are practically begging us to lift them to the stars in exchange for their ");
         part28.Add("who vigorously pellet the probe with their ");
         part28.Add("who have begun honouring first contact by staging a display of their ");
         part28.Add("who promise to grant our hearts' deepest desire, as long as that desire is for ");
         part28.Add("who may be swiftly swindled of their ");
 
-        part29.Add("banana peels.");
-        part29.Add("bitcoins.");
-        part29.Add("transcendental deductions.");
-        part29.Add("shabby but kind of novel boardgames.");
-        part29.Add("good grammar.");
-        part29.Add("beer bottles.");
-        part29.Add("upvotes.");
-        part29.Add("great nose-composers' works.");
-        part29.Add("good vibrations.");
-        part29.Add("most advanced shoes.");
+        part29.Add("who unshackled by patriarchy live in superabundance, and offer us great quantities of ");
+        part29.Add("who stage civilisation-wide competitions every four world-cycles over their ");
+        part29.Add("who are obsessed by rumours of a great bearded being who will bestow heaven in exchange for ");
+        part29.Add("who in autoflaggellating processions forever travel the lands seeking ");
+        part29.Add("who dance desperately to a mournful tune bemoaning the loss of their ");
+        part29.Add("who keep making lofty promises of one day giving us ");
+        part29.Add("who boringly without any resistance allow us to take all their resources in exchange for some of our ");
+        part29.Add("who don't even know what possessing things is and are happily relieved of their ");
+        part29.Add("who will give us their wealth, sure, but insist that we also take their ");
+        part29.Add("whose lives are entirely structured around the tragic mediocrity of one day writing \"good characters\", and using the projected moderate literary fame coming from this to acquire some of the galactic region's ");
+
+        part30.Add("banana peels.");
+        part30.Add("bitcoins.");
+        part30.Add("transcendental deductions.");
+        part30.Add("shabby but kind of novel boardgames.");
+        part30.Add("good grammar.");
+        part30.Add("beer bottles.");
+        part30.Add("upvotes.");
+        part30.Add("great nose-composers' works.");
+        part30.Add("good vibrations.");
+        part30.Add("most advanced shoes.");
 
 
+        part31.Add("beloved retro games. ");
+        part31.Add("hygiene tips. ");
+        part31.Add("gentle cuticle treatments. ");
+        part31.Add("foul-smelling but addictive ointment. ");
+        part31.Add("ineffable longing. ");
+        part31.Add("best cheat codes. ");
+        part31.Add("cushion for the pushing.");
+        part31.Add("theories of nostalgia. ");
+        part31.Add("ethics in game journalism. ");
+        part31.Add("existential anguish brought on by a vague feeling that the universe is just a simulation. ");
 
 
+    }
 
 
+    void DoOccasionalThings()
+    {
+        // update the costs just in case
+        for (int i = 0; i < activeLamps; i++)
+        {
+            int purchaseCost = 0;
+            if (resourceGains[i] > 0)
+            {
+                int costLevelLocal = costLevel - i;
+                purchaseCost = Fib(costLevelLocal) * 10;
 
+            }
 
+            if (purchaseCost != 0)
+            {
+                resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + purchaseCost.ToString("N0");
+            }
+            else
+            {
+                resourceCostTexts[i].GetComponent<Text>().text = "Cost: 0";
+            }
+        }
 
+        // Display rank
+        int rankCount = 0;
+        for(int i = 0; i < resourceGains.Length; i++)
+        {
+            if(resourceGains[i] > 0)
+            {
+                rankCount = i;
+            }
 
+        }
+        if (rankCount == 1)
+        {
+            rankText.GetComponent<Text>().text = "\"Miner\"";
+        }
+
+        if (rankCount == 2)
+        {
+            rankText.GetComponent<Text>().text = "\"Pumper\"";
+        }
+
+        if (rankCount == 3)
+        {
+            rankText.GetComponent<Text>().text = "\"Scientist\"";
+        }
+        if (rankCount == 4)
+        {
+            rankText.GetComponent<Text>().text = "\"Prober\"";
+        }
+        if (rankCount == 5)
+        {
+            rankText.GetComponent<Text>().text = "\"Sage\"";
+        }
+        if (rankCount == 6)
+        {
+            rankText.GetComponent<Text>().text = "\"Semi-Pro\"";
+        }
+        if (rankCount == 7)
+        {
+            rankText.GetComponent<Text>().text = "\"Boss\"";
+        }
+        if (rankCount == 8)
+        {
+            rankText.GetComponent<Text>().text = "\"Navigator\"";
+        }
+        if (rankCount == 9)
+        {
+            rankText.GetComponent<Text>().text = "\"Enlightened\"";
+        }
+
+        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[rankCount];
     }
 
     // Update is called once per frame
     void Update () {
 
+        secondTick -= Time.deltaTime;
+        if(secondTick < 0)
+        {
+            secondTick = 1.0f;
+            DoOccasionalThings();
+        }
         // Cycle through dashboard lamps
         lampCounter -= Time.deltaTime; 
         if(lampCounter < 0)
@@ -535,56 +657,61 @@ public class GameController : MonoBehaviour {
 
 
 
-
-        // RESOURCES also get incremented here
-
-        for (int i = 0; i < resourceStockpiles.Length; i++)
+        try
         {
-            if (resourceGains[i] != 0)
-            {
-                resourceStockpiles[i] += resourceGains[i];
-                resourceStockpileTexts[i].GetComponent<Text>().text = "Reserve: " + resourceStockpiles[i].ToString("N0");
-                
-            }
+            // RESOURCES also get incremented here
 
+            for (int i = 0; i < resourceStockpiles.Length; i++)
+            {
+                if (resourceGains[i] != 0)
+                {
+                    resourceStockpiles[i] += resourceGains[i];
+                    resourceStockpileTexts[i].GetComponent<Text>().text = "Reserve: " + resourceStockpiles[i].ToString("N0");
+
+                }
+
+            }
         }
 
-        // Update costs accordingly: 
-        // Costs in lights above = 0
-        // Costs in lights below, follow rule
-        for (int i = 0; i < lamps.Length - 1; i++)
+        catch
         {
-            int cost = Mathf.FloorToInt((currentLamp - 1 - i) * (currentLamp - 1 - i) * 10);
-
-            if (i >= currentLamp)
-            {
-                cost = 0;
-            }
-         
-            if(cost != 0)
-            {
-                resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + cost.ToString("N0");
-            } else
-            {
-                resourceCostTexts[i].GetComponent<Text>().text = "Cost:";
-            }
+            Debug.Log("Something went wrong with resource incrementation");
         }
+
+            
+
+
     }
 
     void IncrementActiveLamps()
     {
         activeLamps += 1;
-        if(activeLamps > lamps.Length - 1)
+        if(questWorldsVisited > 2)
         {
-            
-            activeLamps = lamps.Length;
+            if (activeLamps > lamps.Length - 1)
+            {
+
+                activeLamps = lamps.Length;
+
+            }
 
         }
+        else
+        {
+            if (activeLamps > lamps.Length - 1)
+            {
+
+                activeLamps = lamps.Length - 2;
+
+            }
+        }
+
+
         lampTexts[activeLamps - 1].SetActive(true);
-        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
-
-
-
+        foreach(Transform t in lampTexts[activeLamps - 1].transform)
+        {
+            t.gameObject.SetActive(true);
+        }
     }
 
     void decrementActiveLamps()
@@ -595,49 +722,59 @@ public class GameController : MonoBehaviour {
             activeLamps = 1;
         }
         lampTexts[activeLamps + 1].SetActive(false);
-        engineText.GetComponent<Text>().text = "Probe propulsion brought to you by: " + engineNamesCombo[activeLamps - 1];
     }
 
     bool CanPayForDiscovery(int worldType)
     {
         Debug.Log("Approaching world type " + worldType.ToString());
         bool canPay = true;
-        for (int i = 0; i < worldType; i++)
+
+        for (int i = 0; i <= worldType; i++)
         {
-            int cost = Mathf.FloorToInt((worldType - i) * (worldType - i) * 10);
-            Debug.Log("Drawing from resource number " + i.ToString());
-            // resource cost is tenfold the step removed, 10 for first, 100 for second
-            // first pass, check if there are enough resources
-            Debug.Log("Resource cost would be " + cost.ToString("N0"));
-            if (resourceStockpiles[i] < Mathf.FloorToInt((worldType - i) * (worldType - i) * 10))
+            int purchaseCost = 0;
+            if (resourceGains[i] > 0)
             {
-                
-                Debug.Log("Not enough resource " + i.ToString());
-                return false;
+                int costLevelLocal = costLevel - i;
+                purchaseCost = Fib(costLevelLocal) * 10;
+
+                resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + purchaseCost.ToString("N0");
+
+                Debug.Log("Drawing from resource number " + i.ToString());
+                // resource cost is tenfold the step removed, 10 for first, 100 for second
+                // first pass, check if there are enough resources
+                Debug.Log("Resource cost would be " + purchaseCost.ToString("N0"));
+                if (resourceStockpiles[i] < purchaseCost)
+                {
+
+                    Debug.Log("Not enough resource " + i.ToString());
+                    return false;
+                }
             }
 
         }
 
+
+        
         return true;
-
-        for (int i = 0; i < worldType; i++)
-        {
-            // resource cost is tenfold the step removed, 10 for first, 100 for second
-            // first pass, check if there are enough resources
-            
-
-        }
-
+        
         IncrementActiveLamps();
 
     }
 
     public void DiscoverNewPlanet()
     {
+        bool discoverySucceeds = true;
+        int questTargetWorldTemp = -1;
+
         if (!discoveringPlanet)
         {
 
+            progressionChance += 1;
+
+
+
             discoveringPlanet = true;
+
 
             int firstNumber;
             firstNumber = Random.Range(0, 2);
@@ -700,55 +837,92 @@ public class GameController : MonoBehaviour {
 
             // Generate world description
             string worldText = "";
+
+            if (quintillions[8] == 9)
+            {
+                worldText += "You have gained HYPE! The Galaxy is practically yours for the taking. Keep on building it up, there's bound to be a payoff! ";
+            }
+
             worldText += "The probe has landed on a ";
+                try
+                {
 
-            try
+
+                    worldText += part1[quintillions[0]];
+                    worldText += part2[quintillions[1]]; // colour
+                    worldText += part3[quintillions[2]];
+                    worldText += part4[quintillions[3]];
+                    worldText += part5[quintillions[4]];
+                    worldText += part6[quintillions[5]];
+                    worldText += part7[quintillions[6]];
+                    worldText += part8[quintillions[7]];
+                    worldText += part9[quintillions[8]]; // Resources!
+                    worldText += part10[quintillions[9]];
+                    worldText += part11[quintillions[10]];
+                    worldText += part12[quintillions[11]];
+                    worldText += part13[quintillions[12]];
+                    worldText += part14[quintillions[13]];
+                    worldText += part15[quintillions[14]];
+                    worldText += part16[quintillions[15]];
+                    worldText += part17[quintillions[16]];
+                    worldText += part18[quintillions[17]];
+                    worldText += part19[quintillions[18]];
+                    worldText += part20[quintillions[19]];
+                    worldText += part21[quintillions[20]];
+                    worldText += part22[quintillions[21]];
+                    worldText += part23[quintillions[22]];
+                    worldText += part24[quintillions[23]];
+                    worldText += part25[quintillions[24]];
+                    worldText += part26[quintillions[25]];
+                    worldText += part27[quintillions[26]];
+                    if (quintillions[0] == 0)
+                    {
+                        worldText += part28[quintillions[27]];
+                    }
+                    else
+                    {
+                        worldText += part29[quintillions[27]];
+                    }
+                    if (quintillions[0] == 0)
+                    {
+                        worldText += part30[quintillions[28]];
+                    }
+                    else
+                    {
+                        worldText += part30[quintillions[28]];
+                    }
+
+                    if (progressionChance > Random.Range(5, 10))
+                    {
+                        // visit next quest world pointer
+                        questTargetWorldTemp = Random.Range(1, activeLamps - 1) + questWorldsVisited * 2;
+                        if(questTargetWorldTemp > 8)
+                    {
+                        questTargetWorldTemp = 8;
+                    }
+                        worldText += " The inhabitants respond to your quest for Hype and suggest you visit the nearest world with " + part9[questTargetWorldTemp];
+                        progressionChance = 0;
+                        Debug.Log("quest target world is " + questTargetWorldTemp.ToString());
+                        // if the player visits the right world after this one, then the progression counter resets and the quest world is visited
+
+                    }
+
+                }
+                catch
+                {
+                    worldText = "The probe got lost!";
+                    worldNumberText.GetComponent<Text>().text = "World: ???";
+                    worldText = "The probe got lost!\n\nTake care to time the launch well";
+                    mainText.GetComponent<Text>().text = worldText;
+                    discoverySucceeds = false;
+                }
+
+
+
+            if (CanPayForDiscovery(quintillions[8]) && discoverySucceeds)
             {
 
-
-                worldText += part1[quintillions[0]];
-                worldText += part2[quintillions[1]]; // colour
-                worldText += part3[quintillions[2]];
-                worldText += part4[quintillions[3]];
-                worldText += part5[quintillions[4]];
-                worldText += part6[quintillions[5]];
-                worldText += part7[quintillions[6]];
-                worldText += part8[quintillions[7]];
-                worldText += part9[quintillions[8]]; // Resources!
-                worldText += part10[quintillions[9]];
-                worldText += part11[quintillions[10]];
-                worldText += part12[quintillions[11]];
-                worldText += part13[quintillions[12]];
-                worldText += part14[quintillions[13]];
-                worldText += part15[quintillions[14]];
-                worldText += part16[quintillions[15]];
-                worldText += part17[quintillions[16]];
-                worldText += part18[quintillions[17]];
-                worldText += part19[quintillions[18]];
-                worldText += part20[quintillions[19]];
-                worldText += part21[quintillions[20]];
-                worldText += part22[quintillions[21]];
-                worldText += part23[quintillions[22]];
-                worldText += part24[quintillions[23]];
-                worldText += part25[quintillions[24]];
-                worldText += part26[quintillions[25]];
-                worldText += part27[quintillions[26]];
-                worldText += part28[quintillions[27]];
-                worldText += part29[quintillions[28]];
-
-
-
-            }
-            catch
-            {
-                worldText = "The probe got lost!";
-                worldNumberText.GetComponent<Text>().text = "World: ???";
-                worldText = "The probe got lost!";
-                mainText.GetComponent<Text>().text = worldText;
-            }
-
-            if (CanPayForDiscovery(quintillions[8]))
-            {
+                Debug.Log("fibonacci cost : " + (Fib(costLevel) * 10).ToString());
                 // play sound
                 buttonSound.Play();
 
@@ -757,41 +931,104 @@ public class GameController : MonoBehaviour {
                 {
 
                     Debug.Log("Drawing from resource number " + i.ToString());
-                    // resource cost is tenfold the step removed, 10 for first, 100 for second
+                    // resource cost is fibonacci of the level index less distance from start node times ten 
                     // first pass, check if there are enough resources
-                    //resourceStockpiles[i] -= Mathf.FloorToInt(Mathf.Pow(10, (quintillions[8] - i)));
-                    resourceStockpiles[i] -= Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10);
+
+                    int costLevelLocal = costLevel - i;
+
+                    int purchaseCost = Fib(costLevelLocal) * 10;
+
+                    resourceStockpiles[i] -= purchaseCost;
+
+
+                    // resourceStockpileTexts[i].GetComponent<Text>().text = "Reserves: " + resourceStockpiles[i].ToString("N0");
 
                     // Create icon to show cost
                     GameObject newText = Instantiate(textSpawn, resourceStockpileTexts[i].transform.position, Quaternion.identity) as GameObject;
                     newText.transform.parent = (GameObject.Find("Canvas").transform);
-                    newText.GetComponent<Text>().text = Mathf.FloorToInt((quintillions[8] - i) * (quintillions[8] - i) * 10).ToString("N0");
-                }
-                // Increment resource gain from that type of world
-                resourceGains[quintillions[8]] += 1;
-                string resourceText = "+";
-                string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
-                resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
-                StartCoroutine(FlickerWorldNumber(1.8f));           
-                StartCoroutine(ChangeWorldTextWithDelay(worldText, outputNumber, 2.2f));
 
+                    newText.GetComponent<Text>().text = purchaseCost.ToString("N0");
+
+
+                }
+
+                try
+                {
+                    // Increment resource gain from that type of world
+                    resourceGains[quintillions[8]] += 1;
+                    string resourceNumber = resourceGains[quintillions[8]].ToString("N0");
+                    resourceTexts[quintillions[8]].GetComponent<Text>().text = "+" + resourceNumber;
+
+                    StartCoroutine(FlickerWorldNumber(1.8f));
+
+                }
+                catch
+                {
+                    Debug.Log("Something went wrong with resource gains");
+                }
+
+                // Actually discover world and display text
+                if (quintillions[8] != questTargetWorld)
+                {
+                    StartCoroutine(ChangeWorldTextWithDelay(worldText, outputNumber, 2.2f));
+
+                }
+
+                else
+                {
+                    Debug.Log("quintillions[8] is " + quintillions[8].ToString() + " which matches " + questTargetWorld.ToString());
+                    // next quest world has been reached
+                    StartCoroutine(ChangeWorldTextWithDelay(questTexts[questWorldsVisited], outputNumber, 2.2f));
+                    questWorldsVisited += 1;
+
+                    // Other quest progression related stuff here:
+
+                    // Impossible to reach next questTargetWorld 
+                    questTargetWorld = -1;
+
+                }
                 // mainText.GetComponent<Text>().text = worldText;
                 ChangeCameraBackgroundColour(quintillions[1]);
 
-                Debug.Log(quintillions[8].ToString() + " al " + (activeLamps - 1).ToString());
+                Debug.Log("world " + quintillions[8].ToString() + " active lamps " + (activeLamps - 1).ToString());
 
+                // Update DISCOVERY COSTS: 
+                // Costs in lights above = 0
+                // Costs in lights below, follow rule fibo of costlevel minus lamp count times ten
+                for (int i = 0; i < activeLamps; i++)
+                {
+                    int purchaseCost = 0;
+                    if (resourceGains[i] > 0)
+                    {
+                        int costLevelLocal = costLevel - i;
+                        purchaseCost = Fib(costLevelLocal) * 10;
 
+                    }
+
+                    if (purchaseCost != 0)
+                    {
+                        resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + purchaseCost.ToString("N0");
+                    }
+                    else
+                    {
+                        resourceCostTexts[i].GetComponent<Text>().text = "Cost: 0";
+                    }
+                }
+
+                levelTicker += 1;
+                if (levelTicker > 2)
+                {
+                    levelTicker = 0;
+                    costLevel += 1;
+                }
                 if (quintillions[8] == (activeLamps - 1))
                 {
+
+
                     // Allow next world to be reached
                     IncrementActiveLamps();
                 }
-
-                // END CONDITIONY THING
-                if (quintillions[8] == 9)
-                {
-                    rankText.GetComponent<Text>().text = "\"Enlightened\"";
-                }
+ 
 
                 ChangeProbecamText();
 
@@ -799,8 +1036,9 @@ public class GameController : MonoBehaviour {
             else
             {
                 failedLaunch.Play();
-                worldNumberText.GetComponent<Text>().text = "World: Same old";
-                mainText.GetComponent<Text>().text = "Not enough resources to send probe there.";
+                questTargetWorld = -1;
+                worldNumberText.GetComponent<Text>().text = "World: ???";
+                mainText.GetComponent<Text>().text = "That launch timing was as a bit weird. Not sure we could reach a world with our resources if we went that way. Oh well, stranded now.";
                 discoveringPlanet = false;
             }
 
@@ -809,6 +1047,13 @@ public class GameController : MonoBehaviour {
         {
             failedLaunch.Play();
 
+        }
+
+
+        if(questTargetWorldTemp > 0)
+
+        {
+            questTargetWorld = questTargetWorldTemp;
         }
     }
 
@@ -1027,5 +1272,12 @@ void ChangeCameraBackgroundColour(int colourType)
         return curve.Evaluate(Random.value);
     }
 
-   
+    public static int Fib(int aIndex)
+    {
+        if (aIndex <= 0) // important, breaking condition for the recursion
+            return 0;
+        if (aIndex == 1) // important, breaking condition for the recursion
+            return 1;
+        return Fib(aIndex - 1) + Fib(aIndex - 2); // recursion
+    }
 }
