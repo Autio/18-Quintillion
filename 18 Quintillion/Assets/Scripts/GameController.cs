@@ -36,6 +36,7 @@ public class GameController : MonoBehaviour {
 
     private bool discoveringPlanet = false;
 
+    List<string> part0 = new List<string>();
     List<string> part1 = new List<string>();
     List<string> part2 = new List<string>();
     List<string> part3 = new List<string>();
@@ -78,8 +79,8 @@ public class GameController : MonoBehaviour {
         resourceGains = new int[10];
         resourceStockpiles = new int[10];
 
-        engineNames1.Add("Eucalyptus");
-        engineNames1.Add("Anthracite");
+        engineNames1.Add("Wood");
+        engineNames1.Add("Carbon");
         engineNames1.Add("Benzene");
         engineNames1.Add("Nucular");
         engineNames1.Add("Antiquark");
@@ -87,7 +88,7 @@ public class GameController : MonoBehaviour {
         engineNames1.Add("Dialectical");
         engineNames1.Add("Dilithium");
         engineNames1.Add("Holtzman");
-        engineNames1.Add("Spirit");
+        engineNames1.Add("Hype");
 
         engineNames2.Add("Stove");
         engineNames2.Add("Locomotivator");
@@ -96,9 +97,10 @@ public class GameController : MonoBehaviour {
         engineNames2.Add("Pump");
         engineNames2.Add("Kettle");
         engineNames2.Add("Persuader");
-        engineNames2.Add("Warpdriver");
+        engineNames2.Add("Warpdrive");
         engineNames2.Add("Folder");
-        engineNames2.Add("Self-Determiner");
+        engineNames2.Add("Engine");
+
         // second part of names should be randomised
         engineNames2.Sort((x, y) => Random.value < 0.5f ? -1 : 1);
         
@@ -120,7 +122,8 @@ public class GameController : MonoBehaviour {
         cameraFails.Add("Camera out of battery! Please send money to Probatron Services for replacement");
         cameraFails.Add("Now don't panic but the camera doesn't seem to be working");
         cameraFails.Add("Camera gone broke down again");
-        cameraFails.Add("The camera is out of batteries but can we suggest you use your imagination?");
+        cameraFails.Add("The camera is out of batteries but can we suggest you use your imagination instead?");
+        cameraFails.Add("Unknown camera issue - sorry about that");
 
 
         part1.Add("mainly ");
