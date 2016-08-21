@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour {
     public GameObject[] resourceTexts;
     public GameObject[] resourceStockpileTexts;
     public GameObject[] resourceCostTexts;
+    int[] resourceCosts;
     public GameObject engineText;
     public GameObject textSpawn;
     int[] resourceGains;
@@ -97,12 +98,13 @@ public class GameController : MonoBehaviour {
        
         resourceGains = new int[11];
         resourceStockpiles = new int[11];
+        resourceCosts = new int[11];
 
         resourceGains[0] = 1;
 
         questTexts.Add("The probe lands on a blue planet twinkling in the night, weaving its way down through a heavy mist which blankets weary land. Mighty shapes jut out everywhere, resistant to scans, advanced technology or unusual geology. Small bands of local inhabitants, shrouded in hooded woollen robes, emerge from the greyness and surround your probe. They whisper of a great bearded being who once passed through these lands speaking in sweeping terms of unimaginable bliss. With his words the traveler lured the youth of the local tribe with itself off towards much vaunted miracles at the galactic centre, though what those anointed secrets exactly were, no-one here clearly remembers. The locals present you with an ingredient of Hype: Being Wisely Economical with Information.");
         questTexts.Add("The probe lands on a bustling communications station which is the meeting place of a thousand races; the last, best hope for peace; the nexus of this corner of the galaxy. The probe is wined and dined and you can share a hundred tales, true or false, from the worlds you have visited. You acquire a second ingredient of Hype: Good Connections, a Wink and a Nice Big Smile.");
-        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew, merely doors that lead to other doors and corridors lined with strange mirrors wherein reanimated slivers of past lives, gilded memories of youth, a billion dreams of the future careening into each other in vivid colour and bewildering array. Highlights of life both fleshy and sublime. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond! And all with just one button - CONGRATULATIONS CLICKER.");
+        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew, merely doors that lead to other doors and corridors lined with strange mirrors wherein reanimated slivers of past lives, gilded memories of youth, a billion dreams of the future careen into each other in vivid colour and bewildering array. Highlights of life both fleshy and sublime. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond! And all with just one button - CONGRATULATIONS, CLICKER.");
 
         engineNames1.Add("Wood");
         engineNames1.Add("Carbon");
@@ -247,7 +249,7 @@ public class GameController : MonoBehaviour {
         part9.Add("UNUNTRIUM, ");
         part9.Add("DILITHIUM, ");
         part9.Add("MELANGE, ");
-        part9.Add("HYPE,");
+        part9.Add("HYPE, ");
 
         part10.Add("its meadows ");
         part10.Add("its caverns ");
@@ -517,6 +519,8 @@ public class GameController : MonoBehaviour {
             {
                 resourceCostTexts[i].GetComponent<Text>().text = "Cost: 0";
             }
+
+            resourceCosts[i] = purchaseCost;
         }
 
         // Display rank
@@ -640,8 +644,17 @@ public class GameController : MonoBehaviour {
         {
             if(i != currentLamp)
             {
+                
                 lamps[i].GetComponent<SpriteRenderer>().sprite = lampSprites[0];
+
+                if (resourceStockpiles[i] < resourceCosts[i])
+                {
+                    lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[2];
+                }
+
             }
+
+            
         }
 
         // Also flash the corresponding arrow
@@ -889,7 +902,7 @@ public class GameController : MonoBehaviour {
                     }
                     else
                     {
-                        worldText += part30[quintillions[28]];
+                        worldText += part31[quintillions[28]];
                     }
 
                     if (progressionChance > Random.Range(5, 10))
@@ -900,7 +913,7 @@ public class GameController : MonoBehaviour {
                     {
                         questTargetWorldTemp = 8;
                     }
-                        worldText += " The inhabitants respond to your quest for Hype and suggest you visit the nearest world with " + part9[questTargetWorldTemp];
+                    worldText += " The inhabitants respond to your quest for Hype and suggest you visit the nearest world with " + part9[questTargetWorldTemp].Substring(0, part9[questTargetWorldTemp].Length - 1);
                         progressionChance = 0;
                         Debug.Log("quest target world is " + questTargetWorldTemp.ToString());
                         // if the player visits the right world after this one, then the progression counter resets and the quest world is visited
