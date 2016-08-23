@@ -8,6 +8,8 @@ public class GameController : MonoBehaviour {
     private float secondTick = 1.0f;
     private int levelTicker = 0;
 
+    private bool buildatron = false;
+
     public GameObject worldNumberText;
     public GameObject mainText;
     public GameObject rankText;
@@ -35,6 +37,7 @@ public class GameController : MonoBehaviour {
     public AudioSource failedLaunch;
     public AudioSource[] clickSounds;
     public AudioSource arrivalSound;
+    public AudioSource questWorldSound;
 
     public AnimationCurve[] levels;
 
@@ -102,9 +105,9 @@ public class GameController : MonoBehaviour {
 
         resourceGains[0] = 1;
 
-        questTexts.Add("The probe lands on a blue planet twinkling in the night, weaving its way down through a heavy mist which blankets weary land. Mighty shapes jut out everywhere, resistant to scans, advanced technology or unusual geology. Small bands of local inhabitants, shrouded in hooded woollen robes, emerge from the greyness and surround your probe. They whisper of a great bearded being who once passed through these lands speaking in sweeping terms of unimaginable bliss. With his words the traveler lured the youth of the local tribe with itself off towards much vaunted miracles at the galactic centre, though what those anointed secrets exactly were, no-one here clearly remembers. The locals present you with an ingredient of Hype: Being Wisely Economical with Information.");
-        questTexts.Add("The probe lands on a bustling communications station which is the meeting place of a thousand races; the last, best hope for peace; the nexus of this corner of the galaxy. The probe is wined and dined and you can share a hundred tales, true or false, from the worlds you have visited. You acquire a second ingredient of Hype: Good Connections, a Wink and a Nice Big Smile.");
-        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew, merely doors that lead to other doors and corridors lined with strange mirrors wherein reanimated slivers of past lives, gilded memories of youth, a billion dreams of the future careen into each other in vivid colour and bewildering array. Highlights of life both fleshy and sublime. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond! And all with just one button - CONGRATULATIONS, CLICKER.");
+        questTexts.Add("The probe lands on a blue planet twinkling in the night, weaving its way down through a heavy mist which blankets weary land. Mighty shapes jut out everywhere, resistant to scans, signs advanced technology or unusual geology perhaps. Small bands of local inhabitants, shrouded in hooded woollen robes, emerge from the greyness and surround your probe. They whisper of a great bearded being who once passed through these lands speaking in sweeping terms of unimaginable bliss. With his words the traveler lured the youth of the local tribe with itself off towards much vaunted miracles at the galactic centre, though what those anointed secrets exactly were, no-one here clearly remembers. The locals present you with an ingredient of Hype: Being Wisely Economical with Information.");
+        questTexts.Add("The probe arrives at a dead world orbited by a bustling communications station which is the meeting place of a thousand races; the last, best hope for peace; the nexus of this corner of the galaxy. Docking with the station, the probe is wined and dined and you can share a hundred tales, true or false, from the worlds you have visited with beeps of excitement. In this world of big words, bigger smiles and easy winks you acquire a second ingredient of Hype: A Good Pitch.");
+        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew. Instead there are doors that lead to other doors, and corridors lined with strange mirrors wherein reanimated slivers of past lives flit by, gilded memories of youth are resurrected and a billion dreams of the future careen into each other. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond!\n\nAnd all with just one button - CONGRATULATIONS, CLICKER.");
 
         engineNames1.Add("Wood");
         engineNames1.Add("Carbon");
@@ -186,7 +189,7 @@ public class GameController : MonoBehaviour {
         part3.Add("philosophically ");
 
         part4.Add("unremarkable, ");
-        part4.Add("");
+        part4.Add("suspect, ");
         part4.Add("improbable, ");
         part4.Add("wearisome, ");
         part4.Add("amusing, ");
@@ -249,7 +252,7 @@ public class GameController : MonoBehaviour {
         part9.Add("UNUNTRIUM, ");
         part9.Add("DILITHIUM, ");
         part9.Add("MELANGE, ");
-        part9.Add("HYPE, ");
+        part9.Add("HYPE,");
 
         part10.Add("its meadows ");
         part10.Add("its caverns ");
@@ -268,19 +271,19 @@ public class GameController : MonoBehaviour {
         part11.Add("remarkable for their ");
         part11.Add("dominated by ");
         part11.Add("partially covered by ");
-        part11.Add("sadly lacking any ");
+        part11.Add("adorned by ");
         part11.Add("thoroughly permeated by ");
         part11.Add("soon to be famous for ");
-        part11.Add("welcoming us with ");
+        part11.Add("crammed to the brim with  ");
 
         part12.Add("levitating ");
-        part12.Add("hidden ");
+        part12.Add("evaginated ");
         part12.Add("carnivorous ");
         part12.Add("withering ");
         part12.Add("weaponisable ");
         part12.Add("hypnotic ");
         part12.Add("pestilential ");
-        part12.Add("nourishing ");
+        part12.Add("politically astute ");
         part12.Add("hilariously shaped ");
         part12.Add("psychedelic ");
 
@@ -302,7 +305,7 @@ public class GameController : MonoBehaviour {
         part14.Add("leeching off ");
         part14.Add("in harmony with ");
         part14.Add("intertwined with ");
-        part14.Add("and plenty of ");
+        part14.Add("emitting beeps when found near ");
         part14.Add("competing for space with ");
         part14.Add("as well as ");
 
@@ -328,7 +331,7 @@ public class GameController : MonoBehaviour {
         part16.Add("pistachioes ");
         part16.Add("baobabs ");
 
-        part17.Add("which form the primary sustenance of the native, memorably ");
+        part17.Add("which form the primary sustenance of the roaming ");
         part17.Add("which provide shelter for the indigenous ");
         part17.Add("frequently trapping the ");
         part17.Add("jealously guarded by ");
@@ -378,17 +381,17 @@ public class GameController : MonoBehaviour {
         part21.Add("moths ");
         part21.Add("lemurs ");
         part21.Add("chameleons ");
-        part21.Add("wallabies ");
+        part21.Add("sturgeons ");
         part21.Add("devils ");
         part21.Add("warblers ");
         part21.Add("pidgeons ");
 
-        part22.Add("not forgetting the ");
-        part22.Add("who exist in a wary truce with the world's apex predators, the  ");
-        part22.Add("to be much preferred over the ");
+        part22.Add("second on this world only to the ");
+        part22.Add("who exist in a wary truce with the world's apex predators, some ");
+        part22.Add("who are frankly no better dinner company than the ");
         part22.Add("cohabiting the southern part with groups of ");
         part22.Add("cohabiting the northern part with groups of ");
-        part22.Add("who can be found always gleefully pestering the ");
+        part22.Add("who are often found gleefully pestering the ");
         part22.Add("- nasty things who prey upon the ");
         part22.Add("lazing amidst hordes and hordes of ");
         part22.Add("singing in polyphony with a small grouping of ");
@@ -400,20 +403,20 @@ public class GameController : MonoBehaviour {
         part23.Add("miniscule ");
         part23.Add("prickly ");
         part23.Add("ticklish ");
-        part23.Add("annoying ");
+        part23.Add("magnetic ");
         part23.Add("topologically challenged ");
         part23.Add("two-faced ");
         part23.Add("bellicose ");
 
         part24.Add("dolphinoids");
-        part24.Add("annelids");
+        part24.Add("genital warts");
         part24.Add("pasta-shapes");
         part24.Add("bats");
         part24.Add("exopenguins");
         part24.Add("viruses");
         part24.Add("clouds");
         part24.Add("octopuses");
-        part24.Add("sticks");
+        part24.Add("nano-sticks");
         part24.Add("trombones");
 
         part25.Add(". Riding these beasts there is a nation of ");
@@ -430,8 +433,8 @@ public class GameController : MonoBehaviour {
         part26.Add("barely sentient ");
         part26.Add("(some would say) primitive ");
         part26.Add("highly opinionated ");
-        part26.Add("simple, cooperative and ultimately rather pathetic ");
-        part26.Add("extraordinarily civilised ");
+        part26.Add("deeply contemplative ");
+        part26.Add("practically celibate ");
         part26.Add("questionably garbed ");
         part26.Add("painfully self-aware ");
         part26.Add("communist ");
@@ -450,10 +453,10 @@ public class GameController : MonoBehaviour {
         part27.Add("odours ");
 
         part28.Add("who seem quite happy to trade us their ");
-        part28.Add("who *could* be made to part with their ");
+        part28.Add("who could be made to part with their ");
         part28.Add("who will be readily relieved of their ");
         part28.Add("who in endless rituals of ecstasy jettison heaps and heaps of their ");
-        part28.Add("whose elders present to us their ");
+        part28.Add("whose elders solemnly present to us their ");
         part28.Add("who are practically begging us to lift them to the stars in exchange for their ");
         part28.Add("who vigorously pellet the probe with their ");
         part28.Add("who have begun honouring first contact by staging a display of their ");
@@ -469,7 +472,7 @@ public class GameController : MonoBehaviour {
         part29.Add("who boringly without any resistance allow us to take all their resources in exchange for some of our ");
         part29.Add("who don't even know what possessing things is and are happily relieved of their ");
         part29.Add("who will give us their wealth, sure, but insist that we also take their ");
-        part29.Add("whose lives are entirely structured around the tragic mediocrity of one day writing \"good characters\", and using the projected moderate literary fame coming from this to acquire some of the galactic region's ");
+        part29.Add("whose lives are entirely structured around the tragic mediocrity of writing stories, and using the projected moderate literary fame coming from this to acquire some of the galactic region's ");
 
         part30.Add("banana peels.");
         part30.Add("bitcoins.");
@@ -494,7 +497,6 @@ public class GameController : MonoBehaviour {
         part31.Add("ethics in game journalism. ");
         part31.Add("existential anguish brought on by a vague feeling that the universe is just a simulation. ");
 
-
     }
 
 
@@ -507,7 +509,7 @@ public class GameController : MonoBehaviour {
             if (resourceGains[i] > 0)
             {
                 int costLevelLocal = costLevel - i;
-                purchaseCost = Fib(costLevelLocal) * 10;
+                purchaseCost = Fib(costLevelLocal) * 20;
 
             }
 
@@ -619,40 +621,56 @@ public class GameController : MonoBehaviour {
 
     void IncrementLamp()
     {
-        if(currentLamp == 10)
+        if (currentLamp == 10)
         {
             currentLamp = -1;
         }
         currentLamp += 1;
         // play sound
         int soundNumber = Random.Range(0, clickSounds.Length - 1);
-  
+
         if (currentLamp >= activeLamps && currentLamp < 10)
         {
             currentLamp = 10;
             soundNumber = clickSounds.Length;
         }
-        else   
+        else
         {
             clickSounds[soundNumber].Play();
         }
-        
 
-        lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[1];
+
+        if (currentLamp < lamps.Length - 1)
+        {
+            lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[1];
+
+        } else
+        {
+            lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[4];
+        }
 
         for (int i = 0; i < lamps.Length; i++)
         {
-            if(i != currentLamp)
+            if (i != currentLamp)
             {
-                
+
+
                 lamps[i].GetComponent<SpriteRenderer>().sprite = lampSprites[0];
 
                 if (resourceStockpiles[i] < resourceCosts[i])
                 {
-                    lamps[currentLamp].GetComponent<SpriteRenderer>().sprite = lampSprites[2];
+                    lamps[i].GetComponent<SpriteRenderer>().sprite = lampSprites[2];
                 }
 
+                if (i == lamps.Length - 1)
+                    
+            {
+                lamps[i].GetComponent<SpriteRenderer>().sprite = lampSprites[3];
             }
+
+            }
+
+            
 
             
         }
@@ -748,7 +766,7 @@ public class GameController : MonoBehaviour {
             if (resourceGains[i] > 0)
             {
                 int costLevelLocal = costLevel - i;
-                purchaseCost = Fib(costLevelLocal) * 10;
+                purchaseCost = Fib(costLevelLocal) * 20;
 
                 resourceCostTexts[i].GetComponent<Text>().text = "Cost: " + purchaseCost.ToString("N0");
 
@@ -778,6 +796,10 @@ public class GameController : MonoBehaviour {
     {
         bool discoverySucceeds = true;
         int questTargetWorldTemp = -1;
+
+        // different behaviour if the world selected is Base Building
+
+
 
         if (!discoveringPlanet)
         {
@@ -913,7 +935,7 @@ public class GameController : MonoBehaviour {
                     {
                         questTargetWorldTemp = 8;
                     }
-                    worldText += " The inhabitants respond to your quest for Hype and suggest you visit the nearest world with " + part9[questTargetWorldTemp].Substring(0, part9[questTargetWorldTemp].Length - 1);
+                    worldText += " The inhabitants respond to your quest for Hype and suggest you visit the nearest world with " + part9[questTargetWorldTemp].Substring(0, part9[questTargetWorldTemp].Length - 2) + ".";
                         progressionChance = 0;
                         Debug.Log("quest target world is " + questTargetWorldTemp.ToString());
                         // if the player visits the right world after this one, then the progression counter resets and the quest world is visited
@@ -949,7 +971,7 @@ public class GameController : MonoBehaviour {
 
                     int costLevelLocal = costLevel - i;
 
-                    int purchaseCost = Fib(costLevelLocal) * 10;
+                    int purchaseCost = Fib(costLevelLocal) * 20;
 
                     resourceStockpiles[i] -= purchaseCost;
 
@@ -994,6 +1016,7 @@ public class GameController : MonoBehaviour {
                     StartCoroutine(ChangeWorldTextWithDelay(questTexts[questWorldsVisited], outputNumber, 2.2f));
                     questWorldsVisited += 1;
 
+                    questWorldSound.Play();
                     // Other quest progression related stuff here:
 
                     // Impossible to reach next questTargetWorld 
@@ -1014,7 +1037,7 @@ public class GameController : MonoBehaviour {
                     if (resourceGains[i] > 0)
                     {
                         int costLevelLocal = costLevel - i;
-                        purchaseCost = Fib(costLevelLocal) * 10;
+                        purchaseCost = Fib(costLevelLocal) * 20;
 
                     }
 
@@ -1051,8 +1074,9 @@ public class GameController : MonoBehaviour {
                 failedLaunch.Play();
                 questTargetWorld = -1;
                 worldNumberText.GetComponent<Text>().text = "World: ???";
-                mainText.GetComponent<Text>().text = "That launch timing was as a bit weird. Not sure we could reach a world with our resources if we went that way. Oh well, stranded now.";
+                mainText.GetComponent<Text>().text = "That launch timing was as a bit weird. Not sure we could reach a world with our resources if we went that way.\n\nOh well, stranded now. Better just chop some furniture into firewood now.\n\nBe sure to check there's enough resources in our reserves to get the probe to the next world.";
                 discoveringPlanet = false;
+                resourceStockpiles[0] += 1;
             }
 
 
@@ -1248,6 +1272,7 @@ void ChangeCameraBackgroundColour(int colourType)
 
         yield return new WaitForSeconds(d);
         arrivalSound.Play();
+        
         tvText.GetComponent<Text>().text = s;
     }
 

@@ -23,7 +23,7 @@ public class MusicController : MonoBehaviour {
     {
         while (playingMusic)
         {
-            int maxClips = this.gameObject.GetComponent<GameController>().costLevel;
+            int maxClips = this.gameObject.GetComponent<GameController>().costLevel * 2;
             if (maxClips > musicBlockClips.Length)
             {
                 maxClips = musicBlockClips.Length;
