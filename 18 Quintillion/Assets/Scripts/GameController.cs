@@ -7,9 +7,9 @@ public class GameController : MonoBehaviour {
 
     private float secondTick = 1.0f;
     private int levelTicker = 0;
-
+    private int clickCounter;
     private bool buildatron = false;
-
+    bool ended = false;
     public GameObject worldNumberText;
     public GameObject mainText;
     public GameObject rankText;
@@ -32,6 +32,13 @@ public class GameController : MonoBehaviour {
     public GameObject[] blinkArrows;
     public Sprite[] blinkArrowSprites;
     int currentLamp = 0;
+
+    // Basebuilding
+    bool baseBuilding = true;
+    int baseCounter = 0;
+    public GameObject[] baseLights;
+
+
 
     public AudioSource buttonSound;
     public AudioSource failedLaunch;
@@ -107,7 +114,7 @@ public class GameController : MonoBehaviour {
 
         questTexts.Add("The probe lands on a blue planet twinkling in the night, weaving its way down through a heavy mist which blankets weary land. Mighty shapes jut out everywhere, resistant to scans, signs advanced technology or unusual geology perhaps. Small bands of local inhabitants, shrouded in hooded woollen robes, emerge from the greyness and surround your probe. They whisper of a great bearded being who once passed through these lands speaking in sweeping terms of unimaginable bliss. With his words the traveler lured the youth of the local tribe with itself off towards much vaunted miracles at the galactic centre, though what those anointed secrets exactly were, no-one here clearly remembers. The locals present you with an ingredient of Hype: Being Wisely Economical with Information.");
         questTexts.Add("The probe arrives at a dead world orbited by a bustling communications station which is the meeting place of a thousand races; the last, best hope for peace; the nexus of this corner of the galaxy. Docking with the station, the probe is wined and dined and you can share a hundred tales, true or false, from the worlds you have visited with beeps of excitement. In this world of big words, bigger smiles and easy winks you acquire a second ingredient of Hype: A Good Pitch.");
-        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew. Instead there are doors that lead to other doors, and corridors lined with strange mirrors wherein reanimated slivers of past lives flit by, gilded memories of youth are resurrected and a billion dreams of the future careen into each other. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond!\n\nAnd all with just one button - CONGRATULATIONS, CLICKER.");
+        questTexts.Add("You land on a massive abandoned arkship. The probe can find no control room, no crew. Instead there are doors that lead to other doors, and corridors lined with strange mirrors wherein reanimated slivers of past lives flit by, gilded memories of youth are resurrected and a billion dreams of the future careen into each other. A miracle that even the probe with its miniscule brain struggles to leave behind. You acquire the third and final ingredient of Hype: The Drink Before and the Cigarette After are More Important than the Thing Itself. \n\nYou have acquired all the ingredients of Hype and can keep manufacturing it until Publication Day and beyond!");
 
         engineNames1.Add("Wood");
         engineNames1.Add("Carbon");
@@ -154,6 +161,8 @@ public class GameController : MonoBehaviour {
         cameraFails.Add("Camera gone broke down again");
         cameraFails.Add("The camera is out of batteries but can we suggest you use your imagination instead?");
         cameraFails.Add("Unknown camera issue - sorry about that");
+        cameraFails.Add("Hmm, the camera is not working. Close your eyes and wish upon a star?");
+
 
 
         part1.Add("mainly ");
@@ -163,7 +172,7 @@ public class GameController : MonoBehaviour {
         part1.Add("glaringly ");
         part1.Add("disgustingly ");
         part1.Add("entirely ");
-        part1.Add("partly ");
+        part1.Add("mind-crushingly ");
         part1.Add("unnaturally ");
 
         part2.Add("pink, ");
@@ -229,7 +238,7 @@ public class GameController : MonoBehaviour {
         part7.Add("planet ");
         part7.Add("planetoid ");
         part7.Add("space turtle ");
-        part7.Add("ring ");
+        part7.Add("ringworld ");
         part7.Add("artefact ");
 
         part8.Add("heavy with ");
@@ -260,7 +269,7 @@ public class GameController : MonoBehaviour {
         part10.Add("its valleys ");
         part10.Add("its lakes and oceans ");
         part10.Add("its jungles ");
-        part10.Add("its arctic zones ");
+        part10.Add("its lofty peaks ");
         part10.Add("its surface ");
         part10.Add("its innards ");
         part10.Add("its deserts ");
@@ -340,7 +349,7 @@ public class GameController : MonoBehaviour {
         part17.Add("prized by the ");
         part17.Add("tended by the ");
         part17.Add("giving sustenance to the ");
-        part17.Add("excreted on by the ");
+        part17.Add("furiously excreted on by the ");
 
         part18.Add("finned, ");
         part18.Add("birdlike, ");
@@ -359,7 +368,7 @@ public class GameController : MonoBehaviour {
         part19.Add("bioluminescent ");
         part19.Add("altruistic ");
         part19.Add("cuddly ");
-        part19.Add("curiously heptagonal ");
+        part19.Add("heptagonally gendered ");
         part19.Add("delicious ");
         part19.Add("delicate ");
         part19.Add("nocturnal ");
@@ -425,8 +434,8 @@ public class GameController : MonoBehaviour {
         part25.Add(" hunting families of ");
         part25.Add(" roaming around vast cities of ");
         part25.Add(" dwelling in the ruined complexes of ");
-        part25.Add(". These beings are projected to evolve into ");
-        part25.Add(". In barely comprehensible ways these creatures are pleading to become ");
+        part25.Add(". These curious creatures are being ruthlessly slaughtered towards extinction by a roaming horde of ");
+        part25.Add(". These beings, who are actually the smartest things on the world, are typically worn as hats by the local, ");
         part25.Add(" who have been domesticated by a civilisation of ");
         part25.Add(" carefully cultivated by a race of ");
 
@@ -452,7 +461,7 @@ public class GameController : MonoBehaviour {
         part27.Add("rhubarb-compote ");
         part27.Add("odours ");
 
-        part28.Add("who seem quite happy to trade us their ");
+        part28.Add("who themselves seem quite happy to trade us their ");
         part28.Add("who could be made to part with their ");
         part28.Add("who will be readily relieved of their ");
         part28.Add("who in endless rituals of ecstasy jettison heaps and heaps of their ");
@@ -461,7 +470,7 @@ public class GameController : MonoBehaviour {
         part28.Add("who vigorously pellet the probe with their ");
         part28.Add("who have begun honouring first contact by staging a display of their ");
         part28.Add("who promise to grant our hearts' deepest desire, as long as that desire is for ");
-        part28.Add("who may be swiftly swindled of their ");
+        part28.Add("who, might I suggest, may be swiftly swindled of their ");
 
         part29.Add("who unshackled by patriarchy live in superabundance, and offer us great quantities of ");
         part29.Add("who stage civilisation-wide competitions every four world-cycles over their ");
@@ -485,11 +494,11 @@ public class GameController : MonoBehaviour {
         part30.Add("good vibrations.");
         part30.Add("most advanced shoes.");
 
-
+        
         part31.Add("beloved retro games. ");
         part31.Add("hygiene tips. ");
         part31.Add("gentle cuticle treatments. ");
-        part31.Add("foul-smelling but addictive ointment. ");
+        part31.Add("foul-smelling but addictive herbal ointment. ");
         part31.Add("ineffable longing. ");
         part31.Add("best cheat codes. ");
         part31.Add("cushion for the pushing.");
@@ -792,14 +801,26 @@ public class GameController : MonoBehaviour {
 
     }
 
+    public void BuildBase()
+    {
+        Debug.Log("Building Base Unit");
+        
+    }
+
     public void DiscoverNewPlanet()
     {
         bool discoverySucceeds = true;
         int questTargetWorldTemp = -1;
+        clickCounter += 1;
 
         // different behaviour if the world selected is Base Building
 
-
+        if (ended)
+        {
+            mainText.GetComponent<Text>().text = "And all this by clicking one button " + clickCounter.ToString("N0") + " times\n\nCONGRATULATIONS, CLICKER.\n\n\n\nThanks for playing!\n\n@_ArchBang";
+            ended = false;
+            return;
+        }
 
         if (!discoveringPlanet)
         {
@@ -852,6 +873,8 @@ public class GameController : MonoBehaviour {
                 {
                     // Cheekily replace the 9th number with the currently active lamp number
                     quintillions[i] = currentLamp;
+
+
 
                 }
                 if (!leadingZeroes)
@@ -950,7 +973,14 @@ public class GameController : MonoBehaviour {
                     worldText = "The probe got lost!\n\nTake care to time the launch well";
                     mainText.GetComponent<Text>().text = worldText;
                     discoverySucceeds = false;
+
+                // If the current lamp is base building and base building is enabled, build a base instead of discovering
+                if (baseBuilding && (currentLamp == lamps.Length - 1))
+                {
+                    BuildBase();
+                    
                 }
+            }
 
 
 
@@ -1005,7 +1035,7 @@ public class GameController : MonoBehaviour {
                 // Actually discover world and display text
                 if (quintillions[8] != questTargetWorld)
                 {
-                    StartCoroutine(ChangeWorldTextWithDelay(worldText, outputNumber, 2.2f));
+                    StartCoroutine(ChangeWorldTextWithDelay(worldText, outputNumber, 2.2f, false));
 
                 }
 
@@ -1013,10 +1043,12 @@ public class GameController : MonoBehaviour {
                 {
                     Debug.Log("quintillions[8] is " + quintillions[8].ToString() + " which matches " + questTargetWorld.ToString());
                     // next quest world has been reached
-                    StartCoroutine(ChangeWorldTextWithDelay(questTexts[questWorldsVisited], outputNumber, 2.2f));
+                    StartCoroutine(ChangeWorldTextWithDelay(questTexts[questWorldsVisited], outputNumber, 2.2f, true));
                     questWorldsVisited += 1;
-
-                    questWorldSound.Play();
+                    if(questWorldsVisited > 2)
+                    {
+                        ended = true;
+                    }
                     // Other quest progression related stuff here:
 
                     // Impossible to reach next questTargetWorld 
@@ -1073,10 +1105,13 @@ public class GameController : MonoBehaviour {
             {
                 failedLaunch.Play();
                 questTargetWorld = -1;
+                questTargetWorldTemp = -1;
                 worldNumberText.GetComponent<Text>().text = "World: ???";
                 mainText.GetComponent<Text>().text = "That launch timing was as a bit weird. Not sure we could reach a world with our resources if we went that way.\n\nOh well, stranded now. Better just chop some furniture into firewood now.\n\nBe sure to check there's enough resources in our reserves to get the probe to the next world.";
                 discoveringPlanet = false;
                 resourceStockpiles[0] += 1;
+
+             
             }
 
 
@@ -1248,7 +1283,7 @@ void ChangeCameraBackgroundColour(int colourType)
 
     }
 
-    private IEnumerator ChangeWorldTextWithDelay(string s, string worldNumber, float d)
+    private IEnumerator ChangeWorldTextWithDelay(string s, string worldNumber, float d, bool playSpecialSound)
     {
         mainText.GetComponent<Text>().text = "";
         yield return new WaitForSeconds(2.2f);
@@ -1256,6 +1291,10 @@ void ChangeCameraBackgroundColour(int colourType)
         worldNumberText.GetComponent<Text>().text = worldNumber;
 
         discoveringPlanet = false;
+        if(playSpecialSound)
+        {
+            questWorldSound.Play();
+        }
     }
 
     private IEnumerator ChangeProbecamWithDelay(string s, float d)
