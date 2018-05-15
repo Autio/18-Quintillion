@@ -38,8 +38,6 @@ public class GameController : MonoBehaviour {
     int baseCounter = 0;
     public GameObject[] baseLights;
 
-
-
     public AudioSource buttonSound;
     public AudioSource failedLaunch;
     public AudioSource[] clickSounds;
@@ -242,7 +240,7 @@ public class GameController : MonoBehaviour {
         part7.Add("artefact ");
 
         part8.Add("heavy with ");
-        part8.Add("richly endowed with readily explotable ");
+        part8.Add("richly endowed with readily exploitable ");
         part8.Add("with just about enough harvestable ");
         part8.Add("ready to feed our industry with heaps and heaps of ");
         part8.Add("replete with millions of tons of ");
